@@ -85,13 +85,6 @@ yarn dev
   
 
   
-
-## Layout Figma
-
-  
-
-https://www.figma.com/file/jrRyszpmhDp7z1FaTMUYha/OpenHXRO?node-id=0%3A1&t=wF0IaB5SNYaegedj-1
-
   
 
 ## Production Url
