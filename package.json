@@ -1,0 +1,89 @@
+{
+  "name": "open-hxro",
+  "private": true,
+  "version": "0.0.0",
+  "scripts": {
+    "dev": "webpack serve --env NODE_ENV=development --hot --open",
+    "build:staging": "vite build ----mode staging",
+    "build": "webpack --env NODE_ENV=production --env production",
+    "preview": "webpack serve --env NODE_ENV=production --env production --hot --open",
+    "lint": "eslint .",
+    "lint:fix": "eslint --fix",
+    "format": "prettier --write 'src/**/*.{js,jsx,ts,tsx,css,md,json}' --config ./.prettierrc"
+  },
+  "babel": {
+    "extends": "./webpack/babel.config.js"
+  },
+  "eslintConfig": {
+    "extends": [
+      "./webpack/.eslintrc.js"
+    ]
+  },
+  "prettier": "./webpack/.prettierrc.js",
+  "stylelint": {
+    "extends": [
+      "./webpack/.stylelintrc.js"
+    ]
+  },
+  "dependencies": {
+    "@emotion/react": "^11.10.6",
+    "@emotion/styled": "^11.10.6",
+    "@fontsource/roboto": "^4.5.8",
+    "@hxronetwork/dexterity-ts": "^1.5.23",
+    "@mui/material": "^5.11.12",
+    "@mui/styled-engine-sc": "^5.11.11",
+    "@solana/web3.js": "^1.73.3",
+    "assert": "^2.0.0",
+    "axios": "^1.3.4",
+    "bn": "^1.0.5",
+    "moment": "^2.29.4",
+    "prop-types": "^15.8.1",
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0",
+    "react-router-dom": "^6.8.2",
+    "react-toastify": "^9.1.2",
+    "react-tooltip": "^5.10.1",
+    "react-tradingview-widget": "^1.3.2",
+    "react-uuid": "^2.0.0",
+    "styled-components": "^5.3.8",
+    "vite": "^4.3.3"
+  },
+  "devDependencies": {
+    "@babel/core": "^7.12.10",
+    "@babel/eslint-parser": "^7.12.1",
+    "@babel/plugin-transform-runtime": "^7.15.0",
+    "@babel/preset-env": "^7.12.11",
+    "@babel/preset-react": "^7.18.6",
+    "@svgr/webpack": "^7.0.0",
+    "@types/react": "^18.0.27",
+    "@types/react-dom": "^18.0.10",
+    "@vitejs/plugin-react": "^3.1.0",
+    "@welldone-software/why-did-you-render": "^7.0.1",
+    "babel-loader": "^9.1.2",
+    "babel-plugin-module-resolver": "^5.0.0",
+    "babel-plugin-transform-class-properties": "^6.24.1",
+    "clean-webpack-plugin": "^4.0.0-alpha.0",
+    "copy-webpack-plugin": "^11.0.0",
+    "css-loader": "^6.7.3",
+    "dotenv-webpack": "^8.0.1",
+    "eslint": "^8.35.0",
+    "eslint-config-prettier": "^8.7.0",
+    "eslint-plugin-import": "^2.27.5",
+    "eslint-plugin-jsx-a11y": "^6.7.1",
+    "eslint-plugin-prettier": "^4.2.1",
+    "eslint-plugin-react": "^7.32.2",
+    "eslint-webpack-plugin": "^3.2.0",
+    "file-loader": "^6.2.0",
+    "glob-all": "^3.2.1",
+    "html-webpack-plugin": "^5.5.0",
+    "mini-css-extract-plugin": "^2.7.5",
+    "prettier": "^2.8.4",
+    "process": "^0.11.10",
+    "sass": "^1.58.3",
+    "url-loader": "^4.1.1",
+    "webpack": "^5.73.0",
+    "webpack-cli": "^5.0.1",
+    "webpack-dev-server": "^4.13.1",
+    "webpackbar": "^5.0.0-3"
+  }
+}
