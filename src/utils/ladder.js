@@ -40,7 +40,7 @@ class Ladder {
         let maxSize = this.traderFunction.dexterity.Fractional.New(1, 0);
         let lastPrice = this.traderFunction.dexterity.Fractional.Zero();
         let sum = this.traderFunction.dexterity.Fractional.Zero();
-
+        // console.log('on ladder', this.trader);
         if (this.trader && this.feed && this.feed.market) {
           if (this.isConnect) {
             openOrderIds = this.trader.getOpenOrderIds(

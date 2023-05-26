@@ -178,6 +178,7 @@ class TraderFunction {
       const connectionUrl =
         localStorage.getItem('rpc') || process.env.MAINNET_NETWORK;
       this.rpc = connectionUrl;
+
       const manifest = await this.dexterity.getManifest(
         connectionUrl,
         useCache,
@@ -189,9 +190,27 @@ class TraderFunction {
       return null;
     }
   }
+  async getManifestNoneWallet(useCache = false) {
+    try {
+      const connectionUrl =
+        localStorage.getItem('rpc') || process.env.MAINNET_NETWORK;
+      this.rpc = connectionUrl;
 
-  async updateMPGs() {
-    const manifest = await this.getManifest(false);
+      const manifest = await this.dexterity.getManifest(
+        connectionUrl,
+        useCache
+      );
+      return manifest;
+    } catch (error) {
+      console.error(error);
+      return null;
+    }
+  }
+
+  async updateMPGs(useCache = true) {
+    const manifest = useCache
+      ? await this.getManifest(false)
+      : await this.getManifestNoneWallet();
     if (!manifest) {
       return null;
     }
@@ -225,6 +244,7 @@ class TraderFunction {
       });
       return null;
     }
+
     const trgs = await manifest.getTRGsOfWallet(this.activeMpgPk);
     trgs.sort((a, b) => a.pubkey < b.pubkey);
     if (trgs.length === 0) {
@@ -291,10 +311,9 @@ class TraderFunction {
   }
 
   async connectNoneWallet(callback) {
-    this.provider = window.phantom.solana;
-    this.dexterityWallet = this.provider;
-    const manifest = await this.getManifest();
-    await this.updateMPGs();
+    const manifest = await this.getManifestNoneWallet();
+    await this.updateMPGs(false);
+    await manifest.updateOrderbooks(this.activeMpgPk);
     this.trader = new this.dexterity.Trader(manifest);
     const products = this.dexterity.Manifest.GetProductsOfMPG(this.activeMpg);
     callback(products);
@@ -311,6 +330,7 @@ class TraderFunction {
       this.dexterityWallet = this.provider;
 
       this.provider?.on('connect', async (pk) => {
+        this.trader = null;
         this.walletPubkey = `${pk}`;
         const network = localStorage.getItem('network');
         this.walletPubkeyHref =

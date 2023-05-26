@@ -140,7 +140,9 @@ export const WalletProvider = ({ children }) => {
    */
   const handleGetDataLadder = async (product, productList, connected) => {
     if (!traderFunction || !traderFunction?.activeMpg || !product) return;
-    const manifest = await traderFunction.getManifest(true);
+    const manifest = connected
+      ? await traderFunction.getManifest(true)
+      : await traderFunction.getManifestNoneWallet();
     if (!manifest) return;
     refRenderLadder.current = await createLadder(
       new markets.Market(
@@ -154,12 +156,14 @@ export const WalletProvider = ({ children }) => {
       productList,
       connected
     );
+
     if (
       refRenderLadder.current &&
       typeof refRenderLadder.current.getDataLadder === 'function' &&
       isConnect
     ) {
       refRenderLadder.current.getDataLadder((data) => {
+        console.log('data_ladder', data);
         setMarkPriceList(data?.markPriceList || {});
         setDataLadder(data.ticks);
         setMarkPrice(data?.markPrice);
