@@ -5,7 +5,9 @@ import {
   WrapperRowContent,
   WrapperTitle,
   WrapperContentRows,
+  WrapperLoading,
 } from './ContentPosition.style';
+import IconLoading from '@components/IconLoading';
 
 function ContentPosition({
   dataPosition,
@@ -21,14 +23,7 @@ function ContentPosition({
   const [indexList, setIndexList] = useState({});
 
   useEffect(() => {
-    if (!isConnect) {
-      setPositionList([]);
-      setMarkList([]);
-      setIndexList([]);
-      return;
-    }
     if (
-      !dataPosition?.length ||
       !Object.keys(markPriceList)?.length ||
       !Object.keys(indexPriceList)?.length
     ) {
@@ -37,21 +32,17 @@ function ContentPosition({
     setPositionList(dataPosition);
     setMarkList(markPriceList);
     setIndexList(indexPriceList);
-  }, [isConnect, dataPosition, markPriceList, indexPriceList]);
+  }, [dataPosition, markPriceList, indexPriceList]);
 
   const newProductListKey = useMemo(() => {
     return productsListKey.filter((item) => {
       if (`${item}`.includes('USD')) {
-        return item;
+        return `${item}`.trim();
       }
     });
   }, [JSON.stringify(productsListKey)]);
 
   useEffect(() => {
-    if (!positionList?.length || !isConnect) {
-      setData([]);
-      return;
-    }
     const newProduct = [];
     newProductListKey.map((product) => {
       const position = positionList?.find(
@@ -136,7 +127,8 @@ function ContentPosition({
         <Title className="basis">Annualized Basis</Title>
       </WrapperTitle>
       <WrapperContentRows>
-        {!!data?.length &&
+        {!!Object.keys(markPriceList)?.length &&
+          !!data?.length &&
           data.map((position, index) => {
             return (
               <WrapperRowContent
@@ -168,6 +160,11 @@ function ContentPosition({
               </WrapperRowContent>
             );
           })}
+        {!Object.keys(markPriceList)?.length && (
+          <WrapperLoading>
+            <IconLoading isWhite />
+          </WrapperLoading>
+        )}
       </WrapperContentRows>
     </>
   );

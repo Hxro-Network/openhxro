@@ -59,11 +59,31 @@ export const Title = styled.div`
 export const WrapperContentRows = styled.div`
   display: flex;
   flex-direction: column;
+  height: 100%;
   max-height: calc(100% - 50px);
   overflow: auto;
+  position: relative;
 
   ::-webkit-scrollbar {
     display: none;
+  }
+`;
+
+export const WrapperLoading = styled.div`
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  top: 0px;
+  left: 0px;
+  z-index: 2;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  /* background: #151c28; */
+
+  .style-icon-loading {
+    width: 52px;
+    height: 52px;
   }
 `;
 

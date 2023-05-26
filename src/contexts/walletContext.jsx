@@ -310,7 +310,6 @@ export const WalletProvider = ({ children }) => {
     setAccountSelect('');
     setUSDBalance(0);
     setCashBalance(0);
-    setFundingRateList({});
     traderFunction.disConnect();
   };
 
