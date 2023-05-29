@@ -189,6 +189,14 @@ export const WalletProvider = ({ children }) => {
 
   useEffect(() => {
     const provider = localStorage.getItem('provider');
+    const handleConnectNoneWallet = () => {
+      traderFunction?.connectNoneWallet((products) => {
+        setProductList(products || []);
+        const orderedProductsKeys = Array.from(products?.keys());
+        setProductsListKey(orderedProductsKeys || productsListKey);
+      });
+    };
+    window.addEventListener('disconnect', handleConnectNoneWallet);
     if (
       typeof traderFunction === 'undefined' ||
       provider === 'phantom' ||
@@ -208,6 +216,10 @@ export const WalletProvider = ({ children }) => {
         setProductsListKey(orderedProductsKeys || productsListKey);
       });
     }, 1000);
+    return () => {
+      window.clearTimeout(refTimeOut.current);
+      window.removeEventListener('disconnect', handleConnectNoneWallet);
+    };
   }, []);
 
   useEffect(() => {
@@ -252,10 +264,10 @@ export const WalletProvider = ({ children }) => {
    * Connect Wallet
    */
   const connectWallet = (wallet) => {
-    refIsConnect.current = true;
     refRenderLadder.current = null;
     window.clearTimeout(refTimeOutGetLadder.current);
     traderFunction.connect(`${wallet}`.toLowerCase(), async (data) => {
+      refIsConnect.current = true;
       setLoading(false);
       if (refIsConnect.current) {
         window.clearInterval(refInterValGetLadderNoneWallet.current);
