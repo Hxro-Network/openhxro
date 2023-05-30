@@ -116,14 +116,19 @@ export const WalletProvider = ({ children }) => {
     productList,
     isConnect
   ) => {
-    if (!market && !trader) return;
+    console.log('333', !market, !trader);
+    if (!market || !trader) return;
+    console.log('run');
+
     await market?.updateBook();
-    const ladder = new Ladder(
-      new Feed(market, null, traderFunction, productList),
+    console.log('run2');
+    const ladder = await new Ladder(
+      await new Feed(market, null, traderFunction, productList),
       trader,
       traderFunction,
       isConnect
     );
+    console.log('ladder?.feed', ladder?.feed);
     if (ladder?.feed) {
       await ladder?.feed?.kill();
       ladder.feed.onMarkPrices = async () => {
@@ -140,10 +145,11 @@ export const WalletProvider = ({ children }) => {
    */
   const handleGetDataLadder = async (product, productList, connected) => {
     if (!traderFunction || !traderFunction?.activeMpg || !product) return;
+    console.log('product', product);
     const manifest = await traderFunction.getManifest(true);
     if (!manifest) return;
     refRenderLadder.current = await createLadder(
-      new markets.Market(
+      await new markets.Market(
         manifest,
         traderFunction.dexterity.bytesToString(traderFunction.activeMpg?.name),
         product,
@@ -183,7 +189,7 @@ export const WalletProvider = ({ children }) => {
       refTimeOutGetLadder.current = setTimeout(() => {
         refTimeOutGetLadder.current = undefined;
         handleGetDataLadder(productSelect, productList, refIsConnect.current);
-      }, 500);
+      }, 1000);
     }
   }, [productSelect, isConnect, JSON.stringify(productList), accountSelect]);
 
@@ -237,8 +243,8 @@ export const WalletProvider = ({ children }) => {
               setCashBalance(data?.cashBalance || '');
             });
           }
-        }, 3000);
-      }, 1500);
+        }, 2000);
+      }, 500);
     } else {
       window.clearInterval(refInterValGetLadderNoneWallet.current);
     }
@@ -275,21 +281,21 @@ export const WalletProvider = ({ children }) => {
         const orderedProductsKeys = Array.from(data?.products?.keys());
         setProductsListKey(orderedProductsKeys || productsListKey);
 
-        if (
-          refRenderLadder.current &&
-          typeof refRenderLadder.current.getDataLadder === 'function'
-        ) {
-          refRenderLadder.current.getDataLadder((data) => {
-            if (refIsConnect.current) {
-              setMarkPriceList(data?.markPriceList);
-              setDataLadder(data.ticks);
-              setMarkPrice(data?.markPrice);
-              setFundingRateList(data?.fundingRateList || {});
-              setIndexPriceList(data?.indexPriceList || {});
-              setCashBalance(data?.cashBalance || 0);
-            }
-          });
-        }
+        // if (
+        //   refRenderLadder.current &&
+        //   typeof refRenderLadder.current.getDataLadder === 'function'
+        // ) {
+        //   refRenderLadder.current.getDataLadder((data) => {
+        //     if (refIsConnect.current) {
+        //       setMarkPriceList(data?.markPriceList);
+        //       setDataLadder(data.ticks);
+        //       setMarkPrice(data?.markPrice);
+        //       setFundingRateList(data?.fundingRateList || {});
+        //       setIndexPriceList(data?.indexPriceList || {});
+        //       setCashBalance(data?.cashBalance || 0);
+        //     }
+        //   });
+        // }
       }
     });
   };

@@ -40,15 +40,25 @@ class Market {
    * Get products depend on Market product group
    */
   async updateBook() {
+    console.log('3232');
     for (const [
       _,
       { index, product },
     ] of this.traders.dexterity?.Manifest?.GetProductsOfMPG?.(this.mpg) || []) {
-      const meta = this.traders.dexterity.productToMeta(product);
+      const meta = await this.traders.dexterity.productToMeta(product);
+      console.log(55);
       if (clean(meta.name, this.traders) === this.productName.trim()) {
+        console.log(66);
+
         await this.manifest.fetchOrderbook(meta.orderbook);
+        console.log(77);
+
         const { orderbooks } = this.manifest.fields.mpgs.get(this.mpgPk);
+        console.log(88);
+
         this.marketState = orderbooks.get(meta.orderbook.toBase58());
+        console.log(99);
+
         this.productIndex = index;
         // eslint-disable-next-line no-prototype-builtins
         if (product.hasOwnProperty('outright')) {
@@ -56,6 +66,7 @@ class Market {
         } else {
           this.product = product.combo.combo;
         }
+        console.log('break');
         break;
       }
     }

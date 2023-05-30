@@ -33,10 +33,11 @@ class Feed {
     this.markPriceSpreadEMA = traderFunction.dexterity.Fractional.Nan();
     this.fundingRateList = {};
     this.hasSentFirstMsg = false;
-    if (market === null) {
+    console.log('this.market', this.market);
+    if (this.market === null) {
       return;
     }
-
+    console.log('4444', this.market.productName + '');
     this.priceDecimals = traderFunction.dexterity.getPriceDecimals(
       this.market.product.metadata
     );
