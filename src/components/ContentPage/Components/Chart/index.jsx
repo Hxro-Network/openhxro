@@ -2,7 +2,7 @@
 import React, { useEffect, useRef } from 'react';
 import styled from 'styled-components';
 import IconLoading from '@components/IconLoading';
-
+import '../../../../../css/styles.css';
 let tvScriptLoadingPromise;
 const ChartView = ({ productSelect }) => {
   const containerId = useRef(
@@ -28,41 +28,54 @@ const ChartView = ({ productSelect }) => {
     // "left_toolbar", // left sidebar
     'header_undo_redo', // ​​undo, redo button
     'header_fullscreen_button', // ​​full screen button
-    // "header_chart_type", // chart type button
+    // 'header_chart_type', // chart type button
     // "header_screenshot", // screenshot button
     // "header_symbol_search", // ​​head search button
     'header_compare', // ​​compare button
     // "header_indicators", // ​​display indicator button
     // "header_saveload", // ​​save, load button
     'header_settings', // setting button
-    // "header_widget_dom_node", // top toolbar
-    // "border_around_the_chart", // border surround
+    // 'header_widget_dom_node', // top toolbar
+    // 'border_around_the_chart', // border surround
     'countdown', // countdown
     // "compare_symbol",
     'symbol_info', // ​​product information
     // "main_series_scale_menu",
     // "study_dialog_search_control",
     'control_bar', // ​​associated with the navigation button at the bottom of the chart
-    // "hide_left_toolbar_by_default", // ​​hide the left toolbar when the user opens the chart for the first time
+    // 'hide_left_toolbar_by_default', // ​​hide the left toolbar when the user opens the chart for the first time
     'go_to_date', // ​​lower left date range
     // "edit_buttons_in_legend",
   ];
 
+  const customCSS = `.theme-dark:root {
+    --tv-color-platform-background: #000000 !important;
+    --tv-color-pane-background: #000000 !important; 
+    --tv-color-pane-background-secondary: #000000 !important;
+}
+`;
+
+  const cssBlob = new Blob([customCSS], {
+    type: 'text/css',
+  });
+
+  const cssBlobUrl = URL.createObjectURL(cssBlob);
+
   const defaultConfig = {
-    // theme: 'Dark',
+    theme: 'Dark',
     debug: true,
     autosize: true,
     disabled_features: disabledFeatures,
     hidevolume: true,
     locale: 'en',
     enabled_features: ['hide_left_toolbar_by_default'],
-    time_frames: [
-      { text: '1m', resolution: '1', description: '1 Minute' },
-      { text: '5m', resolution: '5', description: '5 Minutes' },
-    ],
+    // time_frames: [
+    //   { text: '1m', resolution: '1', description: '1 Minute' },
+    //   { text: '5m', resolution: '5', description: '5 Minutes' },
+    // ],
+
     toolbar_bg: '#000000',
-    loading_screen: { backgroundColor: '#000000' },
-    custom_css_url: './css/style.css',
+    custom_css_url: cssBlobUrl,
   };
 
   const onLoadScriptRef = useRef();
@@ -90,6 +103,7 @@ const ChartView = ({ productSelect }) => {
           'Overlay.candleStyle.barColorsOnPrevClose': true,
         },
         overrides: {
+          theme: '#000000',
           'paneProperties.backgroundType': 'solid',
           'paneProperties.background': '#000000',
           'scalesProperties.textColor': '#eeeeee',
@@ -182,6 +196,5 @@ const Chart = styled.div`
     height: 100%;
     position: relative;
     z-index: 2;
-    @import url('./css/style.css');
   }
 `;
