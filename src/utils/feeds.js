@@ -53,13 +53,8 @@ class Feed {
    * Start streaming prices of products in wallet
    */
   async startStreaming() {
-    const { asksSocket, bidsSocket } = await this.market.manifest.streamBooks(
-      this.market.product,
-      this.market.marketState,
-      this.booksHandler.bind(this)
-    );
-    this.asksSocket = asksSocket;
-    this.bidsSocket = bidsSocket;
+    // 
+    this.pollBooks();
     this.tradesSocket = await this.market.manifest.streamTrades(
       this.market.product,
       this.market.marketState,
@@ -110,23 +105,9 @@ class Feed {
         markPrices,
         this.market.product.metadata.productKey
       );
+
     this.indexPrice = this.markPrice.add(this.markPriceSpreadEMA);
-    // console.log(' this.indexPrice', this.indexPrice + '');
-    // if (!this.markPrice.isNan() && !this.markPriceSpreadEMA.isNan()) {
-    //   const prodName = this.trades.dexterity.bytesToString(
-    //     this.market.product.metadata.name
-    //   );
-    //   if (prodName.trim().indexOf('USD') > 0) {
-    //     this.fundingRate = this.markPrice
-    //       .sub(this.indexPrice)
-    //       .div(this.indexPrice)
-    //       .mul(
-    //         this.trades.dexterity.Fractional.New(100, 0).div(
-    //           this.trades.dexterity.Fractional.New(24, 0)
-    //         )
-    //       );
-    //   }
-    // }
+
 
     for (const [key, value] of this.productList) {
       const meta = this.trades.dexterity.productToMeta(value.product);
