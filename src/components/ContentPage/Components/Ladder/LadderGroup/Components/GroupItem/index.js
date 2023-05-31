@@ -387,6 +387,7 @@ export default function GroupItem({
                   handleReturnTotalBefore(totalSize, index, true)?.totalBid
                 }
                 totalSizeSecond={totalSize?.totalAsk || 0}
+                isConnect={isConnect}
               />
             )}
             {tick.tickPrices && (
@@ -408,6 +409,7 @@ export default function GroupItem({
                 isShowBackground={typeGroup === 'ask'}
                 totalSizeSecond={totalSize?.totalBid || 0}
                 isGroup={true}
+                isConnect={isConnect}
               />
             )}
             {tick.traderAsk &&

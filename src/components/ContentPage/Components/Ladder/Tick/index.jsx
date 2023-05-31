@@ -38,7 +38,7 @@ const Tick = ({
     e.preventDefault;
     if (
       !isConnect &&
-      (typeof onOrder === 'function' || typeof onCancel === 'function')
+      (typeof onOrder !== 'function' || typeof onCancel !== 'function')
     ) {
       toast.warn('Connect wallet to make transactions.');
       return;
