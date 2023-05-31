@@ -1353,10 +1353,10 @@
   resolved "https://registry.npmjs.org/@humanwhocodes/object-schema/-/object-schema-1.2.1.tgz"
   integrity sha512-ZnQMnLV4e7hDlUvw8H+U8ASL02SS2Gn6+9Ac3wGGLIe7+je2AeAOxPY+izIPJDfFDb7eDjev0Us8MO1iFRN8hA==
 
-"@hxronetwork/dexterity-ts@^1.5.28":
-  version "1.5.28"
-  resolved "https://registry.yarnpkg.com/@hxronetwork/dexterity-ts/-/dexterity-ts-1.5.28.tgz#89c98ab29700dde626e103199dc42d65aecf42a2"
-  integrity sha512-UrTd4oOll647UECxvH3I44LefK5qFgRVGV5CNdcb7amP16aMGdoDWmgmK+Rc4ODi0D4gigudQvO6Fxdv4faeDw==
+"@hxronetwork/dexterity-ts@^1.5.29":
+  version "1.5.29"
+  resolved "https://registry.yarnpkg.com/@hxronetwork/dexterity-ts/-/dexterity-ts-1.5.29.tgz#4cddcc42bdd13dc51ed9a1728df60325ca15fff3"
+  integrity sha512-RWtTFvrTMbdN43SxFoNc87JjvUuL1z3tig99YBUeTEUtQbi4ULo87Av3FTdstDUmlOxEJLafXKwBldm6OccCuQ==
   dependencies:
     "@bonfida/aaob" "0.0.3"
     "@project-serum/anchor" "^0.24.2"
