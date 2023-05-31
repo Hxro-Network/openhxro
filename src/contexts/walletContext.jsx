@@ -116,10 +116,10 @@ export const WalletProvider = ({ children }) => {
     productList,
     isConnect
   ) => {
-    if (!market && !trader) return;
+    if (!market || !trader) return;
     await market?.updateBook();
-    const ladder = new Ladder(
-      new Feed(market, null, traderFunction, productList),
+    const ladder = await new Ladder(
+      await new Feed(market, null, traderFunction, productList),
       trader,
       traderFunction,
       isConnect
@@ -143,7 +143,7 @@ export const WalletProvider = ({ children }) => {
     const manifest = await traderFunction.getManifest(true);
     if (!manifest) return;
     refRenderLadder.current = await createLadder(
-      new markets.Market(
+      await new markets.Market(
         manifest,
         traderFunction.dexterity.bytesToString(traderFunction.activeMpg?.name),
         product,
@@ -183,7 +183,7 @@ export const WalletProvider = ({ children }) => {
       refTimeOutGetLadder.current = setTimeout(() => {
         refTimeOutGetLadder.current = undefined;
         handleGetDataLadder(productSelect, productList, refIsConnect.current);
-      }, 500);
+      }, 1000);
     }
   }, [productSelect, isConnect, JSON.stringify(productList), accountSelect]);
 
@@ -237,8 +237,8 @@ export const WalletProvider = ({ children }) => {
               setCashBalance(data?.cashBalance || '');
             });
           }
-        }, 3000);
-      }, 1500);
+        }, 2000);
+      }, 500);
     } else {
       window.clearInterval(refInterValGetLadderNoneWallet.current);
     }
@@ -280,6 +280,7 @@ export const WalletProvider = ({ children }) => {
           typeof refRenderLadder.current.getDataLadder === 'function'
         ) {
           refRenderLadder.current.getDataLadder((data) => {
+            // console.log('đata', data);
             if (refIsConnect.current) {
               setMarkPriceList(data?.markPriceList);
               setDataLadder(data.ticks);
