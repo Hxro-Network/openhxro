@@ -13,6 +13,7 @@ export default function GroupItem({
   product = 'btc',
   onSetIndexAsk,
   onSetIndexBid,
+  isConnect,
 }) {
   const [ticks, setTicks] = useState([]);
   const PADDING = 100000;
@@ -365,6 +366,7 @@ export default function GroupItem({
                   data={tick.traderBid}
                   tooltip={`Cancel buy ${tick.traderBid.value}`}
                   onCancel={handleCancel}
+                  isConnect={isConnect}
                 />
               ) : (
                 <Tick hasCursor={false} data={tick.traderBid} />
@@ -385,6 +387,7 @@ export default function GroupItem({
                   handleReturnTotalBefore(totalSize, index, true)?.totalBid
                 }
                 totalSizeSecond={totalSize?.totalAsk || 0}
+                isConnect={isConnect}
               />
             )}
             {tick.tickPrices && (
@@ -406,6 +409,7 @@ export default function GroupItem({
                 isShowBackground={typeGroup === 'ask'}
                 totalSizeSecond={totalSize?.totalBid || 0}
                 isGroup={true}
+                isConnect={isConnect}
               />
             )}
             {tick.traderAsk &&
@@ -416,6 +420,7 @@ export default function GroupItem({
                   data={tick.traderAsk}
                   tooltip={`Cancel sell ${tick.traderAsk.value}`}
                   onCancel={handleCancel}
+                  isConnect={isConnect}
                 />
               ) : (
                 <Tick hasCursor={false} data={tick.traderAsk} />

@@ -44,7 +44,7 @@ class Market {
       _,
       { index, product },
     ] of this.traders.dexterity?.Manifest?.GetProductsOfMPG?.(this.mpg) || []) {
-      const meta = this.traders.dexterity.productToMeta(product);
+      const meta = await this.traders.dexterity.productToMeta(product);
       if (clean(meta.name, this.traders) === this.productName.trim()) {
         await this.manifest.fetchOrderbook(meta.orderbook);
         const { orderbooks } = this.manifest.fields.mpgs.get(this.mpgPk);

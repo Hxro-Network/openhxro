@@ -16,6 +16,7 @@ export default function LadderGroup({
   product = 'btc',
   isCollapse,
   onSetIsCollapse,
+  isConnect,
 }) {
   const [indexAsk, setIndexAsk] = useState(0);
   const [indexBid, setIndexBid] = useState(0);
@@ -32,6 +33,7 @@ export default function LadderGroup({
         handleOrder={handleOrder}
         product={product}
         onSetIndexAsk={setIndexAsk}
+        isConnect={isConnect}
       />
       {isCollapse && !!dataLadder?.length ? (
         <Collapse>
@@ -63,6 +65,7 @@ export default function LadderGroup({
         handleOrder={handleOrder}
         product={product}
         onSetIndexBid={setIndexBid}
+        isConnect={isConnect}
       />
     </>
   );

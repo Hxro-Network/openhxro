@@ -88,7 +88,7 @@ const Ladder = () => {
       },
     ],
   };
-  const [isCollapse, setIsCollapse] = useState(false);
+  const [isCollapse, setIsCollapse] = useState(true);
   const refWrapperLadderContent = useRef();
   const [groupSelectForProduct, setGroupSelectForProduct] = useState(
     DATA_GROUP.btc
@@ -98,6 +98,7 @@ const Ladder = () => {
   );
   const [indexGroupSelect, setIndexGroupSelect] = useState(0);
   const [isSelectGroup, setIsSelectGroup] = useState(false);
+  const firstLoad = useRef(false);
 
   const products = useMemo(() => {
     return productsListKey.map((item) => {
@@ -113,6 +114,8 @@ const Ladder = () => {
    * set product active
    */
   const handleSelectProduct = (product) => {
+    firstLoad.current = false;
+    setIsCollapse(true);
     changeProduct(`${product.value}`.trim());
     setSelectedProduct(product);
     const index = products.findIndex(({ value }) => value === product.value);
@@ -209,12 +212,17 @@ const Ladder = () => {
   /**
    * scroll to center ladder
    */
-  const handleFocus = () => {
+  const handleFocus = (firstLoad = false) => {
     if (refWrapperLadderContent.current) {
       const ladderContent = refWrapperLadderContent.current;
       if (newTicks.length) {
-        const top = (newTicks.length / 2 / 2) * 26;
-        ladderContent.scroll({ top: top, behavior: 'smooth' });
+        const top = firstLoad
+          ? (newTicks.length / 2) * 8
+          : (newTicks.length / 2 / 2) * 18;
+        ladderContent.scroll({
+          top: top,
+          behavior: 'smooth',
+        });
       }
     }
   };
@@ -380,6 +388,13 @@ const Ladder = () => {
     }
   }, [productSelect]);
 
+  useEffect(() => {
+    if (!firstLoad.current && !!newTicks?.length) {
+      firstLoad.current = true;
+      handleFocus(true);
+    }
+  }, [JSON.stringify(newTicks)]);
+
   return (
     <WrapperLadders>
       <WrapperDropdown className={`${loading ? 'disable_select' : ''}`}>
@@ -525,6 +540,7 @@ const Ladder = () => {
               product={`${selectedProduct?.value}`.toLowerCase().trim()}
               isCollapse={isCollapse}
               onSetIsCollapse={setIsCollapse}
+              isConnect={isConnect}
             />
           </WrapperLadderGroup>
         )}
