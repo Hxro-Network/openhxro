@@ -110,10 +110,10 @@ function ContentOrder({ dataOrders, productsListKey }) {
                     item?.instrument?.toString()
                   )}
                 </p>
-                <p className="id">
+                <div className="id">
                   {`${item?.id}`.substring(len - 4, len)}
                   <IconCopy className="icon-copy" value={`${item?.id}`} />
-                </p>
+                </div>
                 <WrapperButton className="button">
                   <Button
                     className="style-button button-cancel"

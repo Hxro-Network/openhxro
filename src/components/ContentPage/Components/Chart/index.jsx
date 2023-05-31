@@ -2,7 +2,7 @@
 import React, { useEffect, useRef } from 'react';
 import styled from 'styled-components';
 import IconLoading from '@components/IconLoading';
-import '../../../../../css/styles.css';
+
 let tvScriptLoadingPromise;
 const ChartView = ({ productSelect }) => {
   const containerId = useRef(
@@ -48,34 +48,20 @@ const ChartView = ({ productSelect }) => {
     // "edit_buttons_in_legend",
   ];
 
-  const customCSS = `.theme-dark:root {
-    --tv-color-platform-background: #000000 !important;
-    --tv-color-pane-background: #000000 !important; 
-    --tv-color-pane-background-secondary: #000000 !important;
-}
-`;
-
-  const cssBlob = new Blob([customCSS], {
-    type: 'text/css',
-  });
-
-  const cssBlobUrl = URL.createObjectURL(cssBlob);
-
   const defaultConfig = {
     theme: 'Dark',
+    colorTheme: '#00000',
     debug: true,
     autosize: true,
     disabled_features: disabledFeatures,
     hidevolume: true,
     locale: 'en',
     enabled_features: ['hide_left_toolbar_by_default'],
-    // time_frames: [
-    //   { text: '1m', resolution: '1', description: '1 Minute' },
-    //   { text: '5m', resolution: '5', description: '5 Minutes' },
-    // ],
-
+    time_frames: [
+      { text: '1m', resolution: '1', description: '1 Minute' },
+      { text: '5m', resolution: '5', description: '5 Minutes' },
+    ],
     toolbar_bg: '#000000',
-    custom_css_url: cssBlobUrl,
   };
 
   const onLoadScriptRef = useRef();
@@ -103,11 +89,6 @@ const ChartView = ({ productSelect }) => {
           'Overlay.candleStyle.barColorsOnPrevClose': true,
         },
         overrides: {
-          theme: '#000000',
-          'paneProperties.backgroundType': 'solid',
-          'paneProperties.background': '#000000',
-          'scalesProperties.textColor': '#eeeeee',
-
           'mainSeriesProperties.candleStyle.upColor': '#47C5D8',
           'mainSeriesProperties.candleStyle.downColor': '#E3627D',
           'mainSeriesProperties.candleStyle.borderColor': '#378658',
@@ -124,6 +105,7 @@ const ChartView = ({ productSelect }) => {
         symbol: `PYTH:${handleReturnCoin(productSelect)}`,
         interval: '1',
         container_id: containerId.current,
+        backgroundColor: '#000000',
       });
     }
   }
@@ -175,10 +157,10 @@ const WrapperChart = styled.div`
 
 const Chart = styled.div`
   position: absolute;
-  width: calc(100% + 2px);
-  height: calc(100% + 2px);
-  top: -1px;
-  left: -1px;
+  width: calc(100%);
+  height: calc(100%);
+  top: 0px;
+  left: 0px;
   display: flex;
   justify-content: center;
   align-items: center;
