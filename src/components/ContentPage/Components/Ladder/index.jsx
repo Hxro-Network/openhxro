@@ -540,6 +540,7 @@ const Ladder = () => {
               product={`${selectedProduct?.value}`.toLowerCase().trim()}
               isCollapse={isCollapse}
               onSetIsCollapse={setIsCollapse}
+              isConnect={isConnect}
             />
           </WrapperLadderGroup>
         )}

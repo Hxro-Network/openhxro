@@ -53,7 +53,7 @@ class Feed {
    * Start streaming prices of products in wallet
    */
   async startStreaming() {
-    // 
+    //
     this.pollBooks();
     this.tradesSocket = await this.market.manifest.streamTrades(
       this.market.product,
@@ -94,7 +94,6 @@ class Feed {
    * @param {*} markPrices
    */
   markPricesHandler(markPrices) {
-    console.log('markPrices', markPrices);
     this.markPrice = this.trades.dexterity.Manifest.GetMarkPrice(
       markPrices,
       this.market.product.metadata.productKey
@@ -107,7 +106,6 @@ class Feed {
       );
 
     this.indexPrice = this.markPrice.add(this.markPriceSpreadEMA);
-
 
     for (const [key, value] of this.productList) {
       const meta = this.trades.dexterity.productToMeta(value.product);
