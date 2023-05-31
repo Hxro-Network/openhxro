@@ -156,8 +156,7 @@ export const WalletProvider = ({ children }) => {
     );
     if (
       refRenderLadder.current &&
-      typeof refRenderLadder.current.getDataLadder === 'function' &&
-      isConnect
+      typeof refRenderLadder.current.getDataLadder === 'function'
     ) {
       refRenderLadder.current.getDataLadder((data) => {
         setMarkPriceList(data?.markPriceList || {});
