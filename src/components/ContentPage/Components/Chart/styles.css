@@ -1,9 +1,0 @@
-.theme-dark:root {
-    --tv-color-platform-background: #000000;
-    --tv-color-pane-background: #000000;
-    --tv-color-pane-background-secondary: #000000;
-}
-
-html.theme-dark .chart-page {
-    background-color:#000000;
-}
