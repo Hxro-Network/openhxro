@@ -13,6 +13,7 @@ export default function EntryGroup({
   handleCancel,
   handleOrder,
   qtyGlobal,
+  onSelectPrice,
 }) {
   const PADDING_PRODUCT = product.includes('btc')
     ? 1
@@ -57,9 +58,14 @@ export default function EntryGroup({
                     data={tick.traderBid}
                     tooltip={`Cancel buy ${tick.traderBid.size}`}
                     onCancel={handleCancel}
+                    onSelectPrice={onSelectPrice}
                   />
                 ) : (
-                  <Tick hasCursor={false} data={tick.traderBid} />
+                  <Tick
+                    hasCursor={false}
+                    data={tick.traderBid}
+                    onSelectPrice={onSelectPrice}
+                  />
                 ))}
               {tick.tickBid && (
                 <Tick
@@ -71,10 +77,16 @@ export default function EntryGroup({
                   } @ ${tick.tickPrices?.value}`}
                   onOrder={handleOrder}
                   isBackgroundBid
+                  onSelectPrice={onSelectPrice}
                 />
               )}
               {tick.tickPrices && (
-                <Tick hasCursor={false} data={tick.tickPrices} index={index} />
+                <Tick
+                  hasCursor={false}
+                  data={tick.tickPrices}
+                  index={index}
+                  onSelectPrice={onSelectPrice}
+                />
               )}
               {tick.tickAsk && (
                 <Tick
@@ -84,6 +96,7 @@ export default function EntryGroup({
                   tooltip={`Sell ${
                     tick.tickAsk.value > 0 ? tick.tickAsk.value : qtyGlobal
                   } @ ${tick.tickPrices?.value}`}
+                  onSelectPrice={onSelectPrice}
                 />
               )}
               {tick.traderAsk &&
@@ -94,9 +107,14 @@ export default function EntryGroup({
                     data={tick.traderAsk}
                     tooltip={`Cancel sell ${tick.traderAsk.size}`}
                     onCancel={handleCancel}
+                    onSelectPrice={onSelectPrice}
                   />
                 ) : (
-                  <Tick hasCursor={false} data={tick.traderAsk} />
+                  <Tick
+                    hasCursor={false}
+                    data={tick.traderAsk}
+                    onSelectPrice={onSelectPrice}
+                  />
                 ))}
             </StyledLadder>
           );

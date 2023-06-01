@@ -37,6 +37,7 @@ const Ladder = () => {
     productIndex,
     productSelect,
     loading,
+    onSelectPrice,
   } = useWallet();
 
   const [newTicks, setNewTicks] = useState([]);
@@ -114,6 +115,7 @@ const Ladder = () => {
    * set product active
    */
   const handleSelectProduct = (product) => {
+    onSelectPrice('');
     firstLoad.current = false;
     setIsCollapse(true);
     changeProduct(`${product.value}`.trim());
@@ -449,9 +451,16 @@ const Ladder = () => {
                         tooltip={`Cancel buy ${tick.traderBid.size}`}
                         onCancel={handleCancel}
                         isConnect={isConnect}
+                        valuePrice={tick.tickPrices?.value || '0'}
+                        onSelectPrice={onSelectPrice}
                       />
                     ) : (
-                      <Tick hasCursor={false} data={tick.traderBid} />
+                      <Tick
+                        hasCursor={false}
+                        data={tick.traderBid}
+                        valuePrice={tick.tickPrices?.value || '0'}
+                        onSelectPrice={onSelectPrice}
+                      />
                     ))}
                   {tick.tickBid && (
                     <Tick
@@ -471,6 +480,8 @@ const Ladder = () => {
                       }
                       totalSizeSecond={totalSize?.totalAsk || 0}
                       isConnect={isConnect}
+                      valuePrice={tick.tickPrices?.value || '0'}
+                      onSelectPrice={onSelectPrice}
                     />
                   )}
                   {tick.tickPrices && (
@@ -478,6 +489,8 @@ const Ladder = () => {
                       hasCursor={false}
                       data={tick.tickPrices}
                       index={index}
+                      valuePrice={tick.tickPrices?.value || '0'}
+                      onSelectPrice={onSelectPrice}
                     />
                   )}
                   {tick.tickAsk && (
@@ -497,6 +510,8 @@ const Ladder = () => {
                       isShowBackground
                       totalSizeSecond={totalSize?.totalBid || 0}
                       isConnect={isConnect}
+                      valuePrice={tick.tickPrices?.value || '0'}
+                      onSelectPrice={onSelectPrice}
                     />
                   )}
                   {tick.traderAsk &&
@@ -508,12 +523,16 @@ const Ladder = () => {
                         tooltip={`Cancel sell ${tick.traderAsk.size}`}
                         onCancel={handleCancel}
                         isConnect={isConnect}
+                        valuePrice={tick.tickPrices?.value || '0'}
+                        onSelectPrice={onSelectPrice}
                       />
                     ) : (
                       <Tick
                         hasCursor={false}
                         data={tick.traderAsk}
                         isConnect={isConnect}
+                        valuePrice={tick.tickPrices?.value || '0'}
+                        onSelectPrice={onSelectPrice}
                       />
                     ))}
                   {tick?.isShowCollapse && (
@@ -541,6 +560,7 @@ const Ladder = () => {
               isCollapse={isCollapse}
               onSetIsCollapse={setIsCollapse}
               isConnect={isConnect}
+              onSelectPrice={onSelectPrice}
             />
           </WrapperLadderGroup>
         )}

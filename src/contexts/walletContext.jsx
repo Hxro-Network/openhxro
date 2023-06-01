@@ -19,6 +19,7 @@ export const WalletContext = createContext({
   netWorkConnect: localStorage.getItem('network'),
   fundingRateList: {},
   loading: false,
+  priceSelect: '',
   // yourFillList: [],
 });
 
@@ -56,6 +57,8 @@ export const WalletProvider = ({ children }) => {
   const [fundingRateList, setFundingRateList] = useState({});
   const [qtyGlobal, setQtyGlobal] = useState('.01');
   const [USDBalance, setUSDBalance] = useState(0);
+  const [priceSelect, setPriceSelect] = useState('');
+
   const refIsConnect = useRef(false);
   const refTimeOut = useRef(null);
   const refTimeOutGetLadder = useRef(null);
@@ -156,8 +159,7 @@ export const WalletProvider = ({ children }) => {
     );
     if (
       refRenderLadder.current &&
-      typeof refRenderLadder.current.getDataLadder === 'function' &&
-      isConnect
+      typeof refRenderLadder.current.getDataLadder === 'function'
     ) {
       refRenderLadder.current.getDataLadder((data) => {
         setMarkPriceList(data?.markPriceList || {});
@@ -189,6 +191,14 @@ export const WalletProvider = ({ children }) => {
 
   useEffect(() => {
     const provider = localStorage.getItem('provider');
+    const handleConnectNoneWallet = () => {
+      traderFunction?.connectNoneWallet((products) => {
+        setProductList(products || []);
+        const orderedProductsKeys = Array.from(products?.keys());
+        setProductsListKey(orderedProductsKeys || productsListKey);
+      });
+    };
+    window.addEventListener('disconnect', handleConnectNoneWallet);
     if (
       typeof traderFunction === 'undefined' ||
       provider === 'phantom' ||
@@ -208,6 +218,10 @@ export const WalletProvider = ({ children }) => {
         setProductsListKey(orderedProductsKeys || productsListKey);
       });
     }, 1000);
+    return () => {
+      window.clearTimeout(refTimeOut.current);
+      window.removeEventListener('disconnect', handleConnectNoneWallet);
+    };
   }, []);
 
   useEffect(() => {
@@ -252,10 +266,10 @@ export const WalletProvider = ({ children }) => {
    * Connect Wallet
    */
   const connectWallet = (wallet) => {
-    refIsConnect.current = true;
     refRenderLadder.current = null;
     window.clearTimeout(refTimeOutGetLadder.current);
     traderFunction.connect(`${wallet}`.toLowerCase(), async (data) => {
+      refIsConnect.current = true;
       setLoading(false);
       if (refIsConnect.current) {
         window.clearInterval(refInterValGetLadderNoneWallet.current);
@@ -325,6 +339,10 @@ export const WalletProvider = ({ children }) => {
       traderFunction.setActiveProduct(null, `${product}`.trim());
     }
   };
+
+  const onSelectPrice = (price) => {
+    setPriceSelect(price);
+  };
   return (
     <WalletContext.Provider
       value={{
@@ -359,6 +377,8 @@ export const WalletProvider = ({ children }) => {
         USDBalance,
         setLoading,
         loading,
+        onSelectPrice,
+        priceSelect,
       }}
     >
       {children}

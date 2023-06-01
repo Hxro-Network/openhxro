@@ -34,6 +34,8 @@ export const useWallet = () => {
     USDBalance,
     setLoading,
     loading,
+    onSelectPrice,
+    priceSelect,
   } = useContext(WalletContext);
   return {
     dataPnL,
@@ -67,5 +69,7 @@ export const useWallet = () => {
     USDBalance,
     setLoading,
     loading,
+    onSelectPrice,
+    priceSelect,
   };
 };
