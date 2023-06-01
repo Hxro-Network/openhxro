@@ -99,6 +99,7 @@ const Ladder = () => {
   );
   const [indexGroupSelect, setIndexGroupSelect] = useState(0);
   const [isSelectGroup, setIsSelectGroup] = useState(false);
+  const [isMouseEnter, setIsMouseEnter] = useState(false);
   const firstLoad = useRef(false);
 
   const products = useMemo(() => {
@@ -254,7 +255,7 @@ const Ladder = () => {
       totalAsk: Math.round((total.totalAsk || 0) * PADDING),
       totalBid: Math.round((total.totalBid || 0) * PADDING),
     };
-  }, [newTicks, ticks]);
+  }, [newTicks]);
 
   /**
    *
@@ -317,57 +318,137 @@ const Ladder = () => {
       setNewTicks(ticks);
       return;
     }
+    if (!isMouseEnter) {
+      const newDataLadder = ticks.map((item) => {
+        return {
+          ask: item?.tickAsk?.value ? item?.tickAsk?.value * 1 : 0,
+          bid: item?.tickBid?.value ? item?.tickBid?.value * 1 : 0,
+        };
+      });
 
-    const newDataLadder = ticks.map((item) => {
-      return {
-        ask: item?.tickAsk?.value ? item?.tickAsk?.value * 1 : 0,
-        bid: item?.tickBid?.value ? item?.tickBid?.value * 1 : 0,
+      let maxBid = {
+        ask: 0,
+        bid: 0,
+        index: 0,
+        value: 0,
       };
-    });
+      let minAsk = {
+        ask: 0,
+        bid: 0,
+        index: 0,
+        value: 0,
+      };
 
-    let maxBid = {
-      ask: 0,
-      bid: 0,
-      index: 0,
-      value: 0,
-    };
-    let minAsk = {
-      ask: 0,
-      bid: 0,
-      index: 0,
-      value: 0,
-    };
-
-    newDataLadder.map((item, index) => {
-      if (item.bid > maxBid.bid && maxBid.bid === 0) {
-        maxBid = {
-          ...item,
-          index,
-        };
-      }
-      if (item.ask > 0) {
-        minAsk = {
-          ...item,
-          index,
-        };
-      }
-    });
-
-    if (maxBid.index !== minAsk.index) {
-      const ticksNew = ticks.map((item, index) => {
-        if (index > minAsk.index && index < maxBid.index) {
-          return { ...item, hidden: true };
+      newDataLadder.map((item, index) => {
+        if (item.bid > maxBid.bid && maxBid.bid === 0) {
+          maxBid = {
+            ...item,
+            index,
+          };
         }
-        if (index === minAsk.index) {
-          return { ...item, isShowCollapse: true };
+        if (item.ask > 0) {
+          minAsk = {
+            ...item,
+            index,
+          };
+        }
+      });
+
+      if (maxBid.index !== minAsk.index) {
+        const ticksNew = ticks.map((item, index) => {
+          if (index > minAsk.index && index < maxBid.index) {
+            return { ...item, hidden: true };
+          }
+          if (index === minAsk.index) {
+            return { ...item, isShowCollapse: true };
+          }
+          return item;
+        });
+        setNewTicks(ticksNew);
+        return;
+      }
+      setNewTicks(ticks);
+      return;
+    }
+  }, [ticks, isCollapse, isMouseEnter]);
+
+  useEffect(() => {
+    if (newTicks?.length && isMouseEnter) {
+      const dataNewTicks = newTicks.map((item) => {
+        const tickPrices = `${item?.tickPrices?.value}`.trim();
+        const newItem = ticks.find(
+          (itemNew) => `${itemNew?.tickPrices?.value}`.trim() === tickPrices
+        );
+        if (newItem) {
+          return newItem;
         }
         return item;
       });
-      setNewTicks(ticksNew);
+      if (!isCollapse) {
+        setNewTicks(dataNewTicks);
+        return;
+      }
+
+      const newDataLadder = dataNewTicks.map((item) => {
+        return {
+          ask: item?.tickAsk?.value ? item?.tickAsk?.value * 1 : 0,
+          bid: item?.tickBid?.value ? item?.tickBid?.value * 1 : 0,
+        };
+      });
+
+      let maxBid = {
+        ask: 0,
+        bid: 0,
+        index: 0,
+        value: 0,
+      };
+      let minAsk = {
+        ask: 0,
+        bid: 0,
+        index: 0,
+        value: 0,
+      };
+
+      newDataLadder.map((item, index) => {
+        if (item.bid > maxBid.bid && maxBid.bid === 0) {
+          maxBid = {
+            ...item,
+            index,
+          };
+        }
+        if (item.ask > 0) {
+          minAsk = {
+            ...item,
+            index,
+          };
+        }
+      });
+
+      if (maxBid.index !== minAsk.index) {
+        const ticksNew = dataNewTicks.map((item, index) => {
+          if (index > minAsk.index && index < maxBid.index) {
+            return { ...item, hidden: true };
+          }
+          if (index === minAsk.index) {
+            return { ...item, isShowCollapse: true };
+          }
+          return item;
+        });
+        setNewTicks(ticksNew);
+        return;
+      }
+      setNewTicks(ticks);
       return;
     }
-    setNewTicks(ticks);
-  }, [ticks, isCollapse]);
+  }, [isMouseEnter, ticks, isCollapse]);
+
+  // console.log(
+  //   isMouseEnter,
+  //   newTicks?.[0]?.tickPrices?.value,
+  //   ticks?.[0]?.tickPrices?.value,
+  //   totalSize,
+  //   totalSize?.totalBid > totalSize?.totalAsk
+  // );
 
   useEffect(() => {
     setIsSelectGroup(false);
@@ -434,7 +515,11 @@ const Ladder = () => {
           </div>
         </LadderHeading>
 
-        <WrapperLadderContent ref={refWrapperLadderContent}>
+        <WrapperLadderContent
+          ref={refWrapperLadderContent}
+          onMouseEnter={() => setIsMouseEnter(true)}
+          onMouseLeave={() => setIsMouseEnter(false)}
+        >
           {/* {newTicks && newTicks.length === 0 && !isConnect && (
             <p>Connect wallet to see live market.</p>
           )} */}
