@@ -17,6 +17,7 @@ export default function LadderGroup({
   isCollapse,
   onSetIsCollapse,
   isConnect,
+  onSelectPrice,
 }) {
   const [indexAsk, setIndexAsk] = useState(0);
   const [indexBid, setIndexBid] = useState(0);
@@ -34,6 +35,7 @@ export default function LadderGroup({
         product={product}
         onSetIndexAsk={setIndexAsk}
         isConnect={isConnect}
+        onSelectPrice={onSelectPrice}
       />
       {isCollapse && !!dataLadder?.length ? (
         <Collapse>
@@ -52,6 +54,7 @@ export default function LadderGroup({
             qtyGlobal={qtyGlobal}
             handleCancel={handleCancel}
             handleOrder={handleOrder}
+            onSelectPrice={onSelectPrice}
           />
         )
       )}
@@ -66,6 +69,7 @@ export default function LadderGroup({
         product={product}
         onSetIndexBid={setIndexBid}
         isConnect={isConnect}
+        onSelectPrice={onSelectPrice}
       />
     </>
   );

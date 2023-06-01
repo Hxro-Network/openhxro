@@ -14,6 +14,7 @@ export default function GroupItem({
   onSetIndexAsk,
   onSetIndexBid,
   isConnect,
+  onSelectPrice,
 }) {
   const [ticks, setTicks] = useState([]);
   const PADDING = 100000;
@@ -367,9 +368,16 @@ export default function GroupItem({
                   tooltip={`Cancel buy ${tick.traderBid.value}`}
                   onCancel={handleCancel}
                   isConnect={isConnect}
+                  valuePrice={tick.tickPrices?.value || '0'}
+                  onSelectPrice={onSelectPrice}
                 />
               ) : (
-                <Tick hasCursor={false} data={tick.traderBid} />
+                <Tick
+                  hasCursor={false}
+                  data={tick.traderBid}
+                  valuePrice={tick.tickPrices?.value || '0'}
+                  onSelectPrice={onSelectPrice}
+                />
               ))}
             {tick.tickBid && (
               <Tick
@@ -388,10 +396,18 @@ export default function GroupItem({
                 }
                 totalSizeSecond={totalSize?.totalAsk || 0}
                 isConnect={isConnect}
+                valuePrice={tick.tickPrices?.value || '0'}
+                onSelectPrice={onSelectPrice}
               />
             )}
             {tick.tickPrices && (
-              <Tick hasCursor={false} data={tick.tickPrices} index={index} />
+              <Tick
+                hasCursor={false}
+                data={tick.tickPrices}
+                index={index}
+                valuePrice={tick.tickPrices?.value || '0'}
+                onSelectPrice={onSelectPrice}
+              />
             )}
             {tick.tickAsk && (
               <Tick
@@ -410,6 +426,8 @@ export default function GroupItem({
                 totalSizeSecond={totalSize?.totalBid || 0}
                 isGroup={true}
                 isConnect={isConnect}
+                valuePrice={tick.tickPrices?.value || '0'}
+                onSelectPrice={onSelectPrice}
               />
             )}
             {tick.traderAsk &&
@@ -421,9 +439,16 @@ export default function GroupItem({
                   tooltip={`Cancel sell ${tick.traderAsk.value}`}
                   onCancel={handleCancel}
                   isConnect={isConnect}
+                  valuePrice={tick.tickPrices?.value || '0'}
+                  onSelectPrice={onSelectPrice}
                 />
               ) : (
-                <Tick hasCursor={false} data={tick.traderAsk} />
+                <Tick
+                  hasCursor={false}
+                  data={tick.traderAsk}
+                  valuePrice={tick.tickPrices?.value || '0'}
+                  onSelectPrice={onSelectPrice}
+                />
               ))}
           </StyledLadder>
         );

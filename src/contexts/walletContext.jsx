@@ -19,6 +19,7 @@ export const WalletContext = createContext({
   netWorkConnect: localStorage.getItem('network'),
   fundingRateList: {},
   loading: false,
+  priceSelect: '',
   // yourFillList: [],
 });
 
@@ -56,6 +57,8 @@ export const WalletProvider = ({ children }) => {
   const [fundingRateList, setFundingRateList] = useState({});
   const [qtyGlobal, setQtyGlobal] = useState('.01');
   const [USDBalance, setUSDBalance] = useState(0);
+  const [priceSelect, setPriceSelect] = useState('');
+
   const refIsConnect = useRef(false);
   const refTimeOut = useRef(null);
   const refTimeOutGetLadder = useRef(null);
@@ -336,6 +339,10 @@ export const WalletProvider = ({ children }) => {
       traderFunction.setActiveProduct(null, `${product}`.trim());
     }
   };
+
+  const onSelectPrice = (price) => {
+    setPriceSelect(price);
+  };
   return (
     <WalletContext.Provider
       value={{
@@ -370,6 +377,8 @@ export const WalletProvider = ({ children }) => {
         USDBalance,
         setLoading,
         loading,
+        onSelectPrice,
+        priceSelect,
       }}
     >
       {children}

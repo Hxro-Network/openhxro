@@ -21,6 +21,8 @@ const Tick = ({
   isShowBackground = false,
   isBackgroundBid = false,
   isConnect,
+  onSelectPrice,
+  valuePrice,
 }) => {
   const { value, orderIds, isBid, price } = { ...data };
   const PADDING = 100000;
@@ -36,9 +38,10 @@ const Tick = ({
 
   const handleClick = (e) => {
     e.preventDefault;
+    onSelectPrice(valuePrice);
     if (
       !isConnect &&
-      (typeof onOrder !== 'function' || typeof onCancel !== 'function')
+      (typeof onOrder === 'function' || typeof onCancel === 'function')
     ) {
       toast.warn('Connect wallet to make transactions.');
       return;

@@ -19,14 +19,20 @@ import { useMemo } from 'react';
 import { useEffect } from 'react';
 
 function Mode() {
-  const { qtyGlobal, setQtyGlobal, productIndex, isConnect, productSelect } =
-    useWallet();
+  const {
+    qtyGlobal,
+    setQtyGlobal,
+    productIndex,
+    isConnect,
+    productSelect,
+    priceSelect,
+  } = useWallet();
   const [orderType, setOrderType] = useState('Limit');
 
   const defaultQty = '.01';
   const OPTION_ORDER_TYPE = ['Limit', 'ImmediateOrCancel'];
 
-  const [price, setPrice] = useState('');
+  const [price, setPrice] = useState(priceSelect);
 
   const refType = useRef('.01');
 
@@ -48,6 +54,10 @@ function Mode() {
     setQtyGlobal(valueBet?.[0]);
     refType.current = valueBet?.[0];
   }, [productSelect]);
+
+  useEffect(() => {
+    setPrice(priceSelect);
+  }, [priceSelect]);
 
   const handleClickItem = (value) => {
     if (value === refType.current) {
