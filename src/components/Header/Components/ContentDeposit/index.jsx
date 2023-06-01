@@ -27,6 +27,7 @@ function ContentDeposit({ onClose }) {
     try {
       await traderFunction.deposit(value, () => {
         onClose();
+        traderFunction.trader.updateVarianceCache();
       });
     } catch (error) {
       onClose();
