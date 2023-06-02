@@ -55,7 +55,7 @@ export const WalletProvider = ({ children }) => {
   const [cashBalance, setCashBalance] = useState('');
   const [indexPriceList, setIndexPriceList] = useState({});
   const [fundingRateList, setFundingRateList] = useState({});
-  const [qtyGlobal, setQtyGlobal] = useState('.01');
+  const [qtyGlobal, setQtyGlobal] = useState('');
   const [USDBalance, setUSDBalance] = useState(0);
   const [priceSelect, setPriceSelect] = useState('');
 
