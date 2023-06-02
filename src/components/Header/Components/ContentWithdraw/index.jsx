@@ -15,10 +15,11 @@ import {
   WrapperTitle,
 } from './ContentWithdraw.style';
 import { useWallet } from '../../../../hooks/useWallet';
+import { handleRenderValue } from '../ContentHeader';
 
 function ContentWithdraw({ onClose }) {
   const [valueWithdraw, setValueWithdraw] = useState('');
-  const { cashBalance, USDBalance } = useWallet();
+  const { dataPnL, USDBalance } = useWallet();
 
   const handleConfirm = () => {
     if (!valueWithdraw || `${valueWithdraw}`.includes('e')) {
@@ -39,7 +40,9 @@ function ContentWithdraw({ onClose }) {
 
       <WrapperTitle>
         <Title>Transfer type and Amount</Title>
-        <LabelNote>Available: 0 USDC</LabelNote>
+        <LabelNote>
+          Available: {handleRenderValue(dataPnL?.portfolio)} USDC
+        </LabelNote>
       </WrapperTitle>
       <SelectCoin value={valueWithdraw} handleOnChange={setValueWithdraw} />
 
@@ -52,10 +55,10 @@ function ContentWithdraw({ onClose }) {
         <ValueRow>0 USDC</ValueRow>
       </WrapperRow>
 
-      <WrapperRow>
+      {/* <WrapperRow>
         <TitleRow>Collateral</TitleRow>
         <ValueRow>{(cashBalance * 1).toFixed(2)} USDC</ValueRow>
-      </WrapperRow>
+      </WrapperRow> */}
 
       <WrapperButtonConfirm>
         <Button className={'button-confirm'} onClick={handleConfirm}>
