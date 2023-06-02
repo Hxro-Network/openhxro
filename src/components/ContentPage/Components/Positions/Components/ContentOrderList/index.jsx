@@ -16,10 +16,10 @@ import { handleRenderPrice } from '../../../Market/Components/ContentMarket';
 
 function ContentOrderList({ productsListKey, isConnect, accountSelect }) {
   const TITLE_LIST = ['Time (UTC)', 'Instrument', 'Side', 'Qty', 'Price'];
-  // const [loading, setLoading] = useState(false);
   const [dataFills, setDataFills] = useState([]);
   const refTimeOut = useRef(undefined);
   const refConnect = useRef(isConnect);
+  const refInterval = useRef();
 
   const handleGetDataYourFills = async (products, wallet) => {
     try {
@@ -60,10 +60,9 @@ function ContentOrderList({ productsListKey, isConnect, accountSelect }) {
     if (!isConnect) {
       refConnect.current = false;
       setDataFills([]);
-      // setLoading(false);
       return;
     }
-    // setLoading(true);
+    setDataFills([]);
     refConnect.current = true;
     if (refTimeOut.current) {
       clearTimeout(refTimeOut.current);
@@ -71,9 +70,19 @@ function ContentOrderList({ productsListKey, isConnect, accountSelect }) {
 
     refTimeOut.current = setTimeout(() => {
       refTimeOut.current = undefined;
-      handleGetDataYourFills(productsListKey, accountSelect);
+      refInterval.current = setInterval(() => {
+        handleGetDataYourFills(productsListKey, accountSelect);
+      }, 5000);
     }, 1500);
-  }, [productsListKey, accountSelect, isConnect]);
+
+    return () => {
+      window.clearInterval(refInterval.current);
+    };
+  }, [
+    JSON.stringify(productsListKey),
+    JSON.stringify(accountSelect),
+    isConnect,
+  ]);
 
   return (
     <WrapperContentOrderList>
