@@ -17,6 +17,7 @@ import {
 } from './Header.style';
 import { shortPkStr } from '../../utils';
 import IconCopy from '../IconCopy';
+import ManageAccounts from './Components/ManageAccounts';
 
 const Header = () => {
   const LIST_NETWORK = ['Mainnet', 'Devnet'];
@@ -38,6 +39,8 @@ const Header = () => {
   } = useWallet();
   const [dataWallet, setDataWallet] = useState({});
   const [openModal, setOpenModal] = useState(false);
+  const [openModalAccount, setOpenModalAccount] = useState(false);
+
   const [refresh, setRefresh] = useState(false);
   const refTimeOut = useRef();
 
@@ -262,8 +265,8 @@ const Header = () => {
 
         <AddressWallet hidden={!!dataPnL?.walletPubkey}>
           <WrapperButtonCreateAccount className="wrapper-button-creating-account">
-            <ButtonCreateAccount id="button-creating-account">
-              New Trading Account
+            <ButtonCreateAccount onClick={() => setOpenModalAccount(true)}>
+              Manage Trading Account
             </ButtonCreateAccount>
             <IconLoading />
           </WrapperButtonCreateAccount>
@@ -282,6 +285,11 @@ const Header = () => {
         </AddressWallet>
       </WrapperGroupButton>
       {renderModal}
+      <ManageAccounts
+        open={openModalAccount}
+        onClose={() => setOpenModalAccount(false)}
+        listAccount={dataWallet.listAccounts || []}
+      />
     </StyledHeader>
   );
 };

@@ -333,25 +333,9 @@ class TraderFunction {
         );
 
         callback({ dataWallet, products, wallet });
-        const buttonCreateAccount = document.getElementById(
-          'button-creating-account'
-        );
-        if (buttonCreateAccount) {
-          buttonCreateAccount.addEventListener('click', async () => {
-            const wrapperButton = document.querySelector(
-              '.wrapper-button-creating-account'
-            );
-            if (wrapperButton) {
-              const iconLoading = wrapperButton.querySelector('#icon-loading');
-              if (iconLoading) {
-                iconLoading.classList.add('show-icon-loading');
-              }
-            }
-
-            buttonCreateAccount.classList.add('disable-button');
-            buttonCreateAccount.innerText = 'Confirming transactions...';
-
-            this.createTRG(callback, buttonCreateAccount);
+        if (window) {
+          window.addEventListener('create-account', () => {
+            this.createTRG(callback);
           });
         }
       });
@@ -373,6 +357,7 @@ class TraderFunction {
       this.isConnected = false;
     });
     this.provider.disconnect();
+    window.removeEventListener('create-account', () => {});
   }
 
   async cancelBtnClickedHandler(productIndex, id, callback) {
@@ -521,7 +506,7 @@ class TraderFunction {
     }
   }
 
-  async createTRG(callback, button) {
+  async createTRG(callback) {
     // const createNewTRG = document.getElementById("create-trg");
     // createNewTRG.disabled = true;
     // createNewTRG.textContent = "Confirming transactions...";
@@ -529,22 +514,15 @@ class TraderFunction {
     const trg = await manifest.createTrg(
       new this.web3.PublicKey(this.activeMpgPk)
     ); // TODO figure out how to "bootstrap" MPG
-    button.classList.remove('disable-button');
-    button.innerText = 'New Trading Account';
-    const wrapperButton = document.querySelector(
-      '.wrapper-button-creating-account'
-    );
-    if (wrapperButton) {
-      const iconLoading = wrapperButton.querySelector('#icon-loading');
-      if (iconLoading) {
-        iconLoading.classList.remove('show-icon-loading');
-      }
-    }
+
     if (!trg) {
+      const cancel = new Event('cancel-created-account');
+      window.dispatchEvent(cancel);
+
       console.log('Cancel');
     } else {
-      // createNewTRG.disabled = false;
-      // createNewTRG.textContent = "Create New Trading Account";
+      const success = new Event('created-account-success');
+      window.dispatchEvent(success);
       await this.updateTrgSelect(callback);
     }
   }
