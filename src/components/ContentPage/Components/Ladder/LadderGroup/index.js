@@ -18,6 +18,8 @@ export default function LadderGroup({
   onSetIsCollapse,
   isConnect,
   onSelectPrice,
+  hadNewData,
+  isMouseEnter,
 }) {
   const [indexAsk, setIndexAsk] = useState(0);
   const [indexBid, setIndexBid] = useState(0);
@@ -33,15 +35,26 @@ export default function LadderGroup({
         handleCancel={handleCancel}
         handleOrder={handleOrder}
         product={product}
-        onSetIndexAsk={setIndexAsk}
+        onSetIndexAsk={(index) => {
+          if (!isMouseEnter) {
+            setIndexAsk(index);
+          }
+        }}
         isConnect={isConnect}
         onSelectPrice={onSelectPrice}
+        indexAsk={indexAsk}
+        isMouseEnter={isMouseEnter}
       />
       {isCollapse && !!dataLadder?.length ? (
         <Collapse>
-          <WrapperIcon onClick={() => onSetIsCollapse(false)}>
+          <WrapperIcon
+            onClick={() => {
+              onSetIsCollapse(false);
+            }}
+          >
             <img src={iconHidden} alt="icon" />
           </WrapperIcon>
+          {isMouseEnter && hadNewData && <p className="new-data">New data</p>}
         </Collapse>
       ) : (
         !!dataLadder?.length && (
@@ -67,9 +80,15 @@ export default function LadderGroup({
         handleCancel={handleCancel}
         handleOrder={handleOrder}
         product={product}
-        onSetIndexBid={setIndexBid}
+        onSetIndexBid={(index) => {
+          if (!isMouseEnter) {
+            setIndexBid(index);
+          }
+        }}
         isConnect={isConnect}
         onSelectPrice={onSelectPrice}
+        indexBid={indexBid}
+        isMouseEnter={isMouseEnter}
       />
     </>
   );
@@ -85,4 +104,13 @@ const Collapse = styled.div`
   justify-content: flex-start;
   z-index: 10;
   position: relative;
+
+  .new-data {
+    position: absolute;
+    font-size: 14px;
+    margin: 0px;
+    padding: 0px;
+    left: 20px;
+    top: -18px;
+  }
 `;

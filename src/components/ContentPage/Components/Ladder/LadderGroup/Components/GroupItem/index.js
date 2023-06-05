@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { StyledLadder } from '../../../Ladder.style';
 import Tick from '../../../Tick';
+import cloneDeep from 'lodash.clonedeep';
 
 export default function GroupItem({
   dataLadder,
@@ -15,6 +16,9 @@ export default function GroupItem({
   onSetIndexBid,
   isConnect,
   onSelectPrice,
+  indexBid,
+  indexAsk,
+  isMouseEnter,
 }) {
   const [ticks, setTicks] = useState([]);
   const PADDING = 100000;
@@ -71,6 +75,301 @@ export default function GroupItem({
     ).toFixed(TO_FIXED)}`;
   };
 
+  const handleReturnReductions = (value) => {
+    if (!value) {
+      return value;
+    }
+    let result = 1;
+    for (let index = 0; index < 10; index++) {
+      if (
+        (`${value || 0}` * PADDING_PRODUCT - index) % indexGroupSelect ===
+        0
+      ) {
+        result = index;
+        break;
+      }
+      return result;
+    }
+  };
+
+  const handleReturnIncreases = (value) => {
+    if (!value) {
+      return value;
+    }
+    let result = 1;
+    for (let index = 0; index < 10; index++) {
+      if (
+        (`${value || 0}` * PADDING_PRODUCT + index) % indexGroupSelect ===
+        0
+      ) {
+        result = index;
+        break;
+      }
+      return result;
+    }
+  };
+
+  const handleReturnIndexMinAsk = () => {
+    const length = dataLadder?.length;
+    let indexMixAsk = length || 0;
+    for (let indexMin = 0; indexMin < length; indexMin++) {
+      const tick = dataLadder[indexMin];
+      const askValue = `${tick.tickAsk?.value || 0}` * 1;
+      if (askValue !== 0) {
+        indexMixAsk = indexMin;
+      }
+    }
+    return indexMixAsk;
+  };
+
+  const handleRenderDataAsk = () => {
+    const indexMixAsk =
+      isMouseEnter && !!indexAsk ? indexAsk : handleReturnIndexMinAsk();
+
+    const newTicks = [];
+    const itemLast = dataLadder[indexMixAsk];
+
+    const increases =
+      handleReturnIncreases(itemLast?.tickPrices?.value || 0) || 1;
+    const newDataLadder = cloneDeep(dataLadder).slice(
+      0,
+      isMouseEnter ? indexMixAsk : indexMixAsk + increases
+    );
+
+    if (!isMouseEnter) {
+      onSetIndexAsk(indexMixAsk + increases);
+    }
+    const lengthNewDataLadder = newDataLadder.length;
+    let newAsk = {};
+    for (let index = lengthNewDataLadder - 1; index >= 0; index--) {
+      const tick = newDataLadder[index];
+
+      const valueCoin =
+        `${tick.tickPrices?.value?.toString() || 0}` * PADDING_PRODUCT;
+      const askValue = `${tick.tickAsk?.value?.toString() || 0}` * 1;
+      const valueNewAsk = `${newAsk?.tickAsk?.value?.toString() || 0}` * 1;
+
+      const valueAsk = valueNewAsk * PADDING + askValue * PADDING;
+
+      const askTraderValue = `${tick.traderAsk?.value?.toString() || 0}` * 1;
+      const newTraderValue = `${newAsk.traderAsk?.value?.toString() || 0}` * 1;
+
+      const valueTraderAsk =
+        askTraderValue * PADDING + newTraderValue * PADDING;
+
+      const newOrderIds = [
+        ...(newAsk?.traderAsk?.orderIds || []),
+        ...(tick?.traderAsk?.orderIds || []),
+      ];
+
+      if (valueCoin % indexGroupSelect === 0) {
+        newAsk = {
+          ...tick,
+          tickAsk: {
+            ...tick.tickAsk,
+            value: valueAsk / PADDING,
+          },
+          traderAsk: {
+            ...tick.traderAsk,
+            value: valueTraderAsk / PADDING,
+            orderIds: newOrderIds,
+          },
+          tickBid: {
+            ...tick.tickBid,
+            value: 0,
+          },
+        };
+      } else {
+        if (valueNewAsk === 0) {
+          newAsk = {
+            ...tick,
+            tickAsk: {
+              ...tick.tickAsk,
+              value: valueAsk / PADDING,
+            },
+            tickBid: {
+              ...tick.tickBid,
+              value: 0,
+            },
+            traderAsk: {
+              ...tick.traderAsk,
+              value: valueTraderAsk / PADDING,
+              orderIds: newOrderIds,
+            },
+          };
+        } else {
+          newAsk = {
+            ...newAsk,
+            tickAsk: {
+              ...newAsk.tickAsk,
+              value: valueAsk / PADDING,
+            },
+            traderAsk: {
+              ...tick.traderAsk,
+              value: valueTraderAsk / PADDING,
+              orderIds: newOrderIds,
+            },
+            tickBid: {
+              ...newAsk.tickBid,
+              value: 0,
+            },
+          };
+        }
+      }
+      if (index === 0 || valueCoin % indexGroupSelect === 0) {
+        newTicks.push(newAsk);
+        newAsk = {};
+      }
+    }
+
+    const newData = [];
+    for (let idx = newTicks.length - 1; idx >= 0; idx--) {
+      if (idx === newTicks.length - 1) {
+        newData.push({
+          ...newTicks[idx],
+          tickPrices: {
+            ...newTicks[idx].tickPrices,
+            value:
+              (newTicks[idx].tickPrices.value * PADDING_PRODUCT) %
+                indexGroupSelect ===
+              0
+                ? newTicks[idx].tickPrices.value
+                : handleReturnValueAsk(newTicks[idx].tickPrices.value),
+          },
+        });
+      } else {
+        newData.push(newTicks[idx]);
+      }
+    }
+    setTicks(newData);
+  };
+
+  const handelReturnIndexMinBid = () => {
+    const length = dataLadder.length || 0;
+    let indexMixBid = length;
+    for (let indexMin = 0; indexMin < length; indexMin++) {
+      const tick = dataLadder[indexMin];
+      const bidValue = `${tick.tickBid?.value || 0}` * 1;
+      if (bidValue !== 0) {
+        indexMixBid = indexMin;
+        break;
+      }
+    }
+    return indexMixBid;
+  };
+
+  const handleRenderDataBid = () => {
+    const indexMixBid =
+      isMouseEnter && !!indexBid ? indexBid : handelReturnIndexMinBid();
+
+    const newTicks = [];
+    const itemFirst = dataLadder[indexMixBid];
+
+    const reduction =
+      handleReturnReductions(itemFirst?.tickPrices?.value || 0) || 1;
+    const newDataLadder = cloneDeep(dataLadder).slice(
+      isMouseEnter ? indexMixBid : indexMixBid - reduction,
+      dataLadder.length
+    );
+    onSetIndexBid(indexMixBid - reduction);
+    const lengthNewDataLadder = newDataLadder.length;
+    let newBid = {};
+
+    for (let index = 0; index < lengthNewDataLadder; index++) {
+      const tick = newDataLadder[index];
+
+      const valueCoin =
+        `${tick.tickPrices?.value?.toString() || 0}` * PADDING_PRODUCT;
+      const bidValue = `${tick.tickBid?.value?.toString() || 0}` * 1;
+
+      const valueNewBid = `${newBid?.tickBid?.value?.toString() || 0}` * 1;
+      const valueBid = valueNewBid * PADDING + bidValue * PADDING;
+
+      const askTraderValue = `${tick.traderBid?.value?.toString() || 0}` * 1;
+      const newTraderValue = `${newBid.traderBid?.value?.toString() || 0}` * 1;
+
+      const valueTraderBid =
+        askTraderValue * PADDING + newTraderValue * PADDING;
+
+      const newOrderIds = [
+        ...(newBid?.traderBid?.orderIds || []),
+        ...(tick?.traderBid?.orderIds || []),
+      ];
+
+      if (valueCoin % indexGroupSelect === 0) {
+        newBid = {
+          ...tick,
+          tickBid: {
+            ...tick.tickBid,
+            value: valueBid / PADDING,
+          },
+          traderBid: {
+            ...tick.traderBid,
+            value: valueTraderBid / PADDING,
+            orderIds: newOrderIds,
+          },
+          tickAsk: {
+            ...tick.tickAsk,
+            value: 0,
+          },
+        };
+      } else {
+        if (valueNewBid === 0) {
+          newBid = {
+            ...tick,
+            tickBid: {
+              ...tick.tickBid,
+              value: valueBid / PADDING,
+            },
+            tickAsk: {
+              ...tick.tickAsk,
+              value: 0,
+            },
+            traderBid: {
+              ...tick.traderBid,
+              value: valueTraderBid / PADDING,
+              orderIds: newOrderIds,
+            },
+          };
+        } else {
+          newBid = {
+            ...newBid,
+            tickBid: {
+              ...newBid.tickBid,
+              value: valueBid / PADDING,
+            },
+            tickAsk: {
+              ...newBid.tickAsk,
+              value: 0,
+            },
+            traderBid: {
+              ...newBid.traderBid,
+              value: valueTraderBid / PADDING,
+              orderIds: newOrderIds,
+            },
+          };
+        }
+      }
+      if (
+        index === lengthNewDataLadder - 1 ||
+        valueCoin % indexGroupSelect === 0
+      ) {
+        newTicks.push(newBid);
+        newBid = {};
+      }
+    }
+    const itemLastBid = newTicks[newTicks.length - 1];
+    if (
+      itemLastBid.tickPrices.value * PADDING_PRODUCT * indexGroupSelect !==
+      0
+    ) {
+      newTicks[newTicks.length - 1].tickPrices.value = handleReturnValueBid(
+        newTicks[newTicks.length - 1].tickPrices.value
+      );
+    }
+    setTicks(newTicks);
+  };
+
   useEffect(() => {
     const length = dataLadder?.length || 0;
     if (!length) {
@@ -81,243 +380,14 @@ export default function GroupItem({
      * handle return data typeGroup = ask
      */
     if (typeGroup === 'ask') {
-      let indexMixAsk = length;
-      for (let indexMin = 0; indexMin < length; indexMin++) {
-        const tick = dataLadder[indexMin];
-        const askValue = `${tick.tickAsk?.value?.toString() || 0}` * 1;
-        if (askValue !== 0) {
-          indexMixAsk = indexMin;
-        }
-      }
-      const newTicks = [];
-      const newDataLadder = [...dataLadder].slice(
-        0,
-        indexMixAsk + indexGroupSelect
-      );
-      onSetIndexAsk(indexMixAsk + indexGroupSelect);
-      const lengthNewDataLadder = newDataLadder.length;
-      let newAsk = {};
-      for (let index = lengthNewDataLadder - 1; index >= 0; index--) {
-        const tick = newDataLadder[index];
-
-        const valueCoin =
-          `${tick.tickPrices?.value?.toString() || 0}` * PADDING_PRODUCT;
-        const askValue = `${tick.tickAsk?.value?.toString() || 0}` * 1;
-        const valueNewAsk = `${newAsk?.tickAsk?.value?.toString() || 0}` * 1;
-
-        const valueAsk = valueNewAsk * PADDING + askValue * PADDING;
-
-        const askTraderValue = `${tick.traderAsk?.value?.toString() || 0}` * 1;
-        const newTraderValue =
-          `${newAsk.traderAsk?.value?.toString() || 0}` * 1;
-
-        const valueTraderAsk =
-          askTraderValue * PADDING + newTraderValue * PADDING;
-
-        const newOrderIds = [
-          ...(newAsk?.traderAsk?.orderIds || []),
-          ...(tick?.traderAsk?.orderIds || []),
-        ];
-
-        if (valueCoin % indexGroupSelect === 0) {
-          newAsk = {
-            ...tick,
-            tickAsk: {
-              ...tick.tickAsk,
-              value: valueAsk / PADDING,
-            },
-            traderAsk: {
-              ...tick.traderAsk,
-              value: valueTraderAsk / PADDING,
-              orderIds: newOrderIds,
-            },
-            tickBid: {
-              ...tick.tickBid,
-              value: 0,
-            },
-          };
-        } else {
-          if (valueNewAsk === 0) {
-            newAsk = {
-              ...tick,
-              tickAsk: {
-                ...tick.tickAsk,
-                value: valueAsk / PADDING,
-              },
-              tickBid: {
-                ...tick.tickBid,
-                value: 0,
-              },
-              traderAsk: {
-                ...tick.traderAsk,
-                value: valueTraderAsk / PADDING,
-                orderIds: newOrderIds,
-              },
-            };
-          } else {
-            newAsk = {
-              ...newAsk,
-              tickAsk: {
-                ...newAsk.tickAsk,
-                value: valueAsk / PADDING,
-              },
-              traderAsk: {
-                ...tick.traderAsk,
-                value: valueTraderAsk / PADDING,
-                orderIds: newOrderIds,
-              },
-              tickBid: {
-                ...newAsk.tickBid,
-                value: 0,
-              },
-            };
-          }
-        }
-        if (index === 0 || valueCoin % indexGroupSelect === 0) {
-          newTicks.push(newAsk);
-          newAsk = {};
-        }
-      }
-
-      const newData = [];
-      for (let idx = newTicks.length - 1; idx >= 0; idx--) {
-        if (idx === newTicks.length - 1) {
-          newData.push({
-            ...newTicks[idx],
-            tickPrices: {
-              ...newTicks[idx].tickPrices,
-              value:
-                (newTicks[idx].tickPrices.value * PADDING_PRODUCT) %
-                  indexGroupSelect ===
-                0
-                  ? newTicks[idx].tickPrices.value
-                  : handleReturnValueAsk(newTicks[idx].tickPrices.value),
-            },
-          });
-        } else {
-          newData.push(newTicks[idx]);
-        }
-      }
-      setTicks(newData);
+      handleRenderDataAsk();
       //   const newData = newTicks.filter((item) => item?.tickAsk?.value !== 0);
     }
     /**
      * handle return data typeGroup = bid
      */
     if (typeGroup === 'bid') {
-      let indexMixBid = length;
-      for (let indexMin = 0; indexMin < length; indexMin++) {
-        const tick = dataLadder[indexMin];
-        const askValue = `${tick.tickBid?.value?.toString() || 0}` * 1;
-        if (askValue !== 0) {
-          indexMixBid = indexMin;
-          break;
-        }
-      }
-
-      const newTicks = [];
-      const newDataLadder = [...dataLadder].slice(
-        indexMixBid - indexGroupSelect,
-        length
-      );
-      onSetIndexBid(indexMixBid - indexGroupSelect);
-      const lengthNewDataLadder = newDataLadder.length;
-      let newBid = {};
-
-      for (let index = 0; index < lengthNewDataLadder; index++) {
-        const tick = newDataLadder[index];
-
-        const valueCoin =
-          `${tick.tickPrices?.value?.toString() || 0}` * PADDING_PRODUCT;
-        const bidValue = `${tick.tickBid?.value?.toString() || 0}` * 1;
-
-        const valueNewBid = `${newBid?.tickBid?.value?.toString() || 0}` * 1;
-        const valueBid = valueNewBid * PADDING + bidValue * PADDING;
-
-        const askTraderValue = `${tick.traderBid?.value?.toString() || 0}` * 1;
-        const newTraderValue =
-          `${newBid.traderBid?.value?.toString() || 0}` * 1;
-
-        const valueTraderBid =
-          askTraderValue * PADDING + newTraderValue * PADDING;
-
-        const newOrderIds = [
-          ...(newBid?.traderBid?.orderIds || []),
-          ...(tick?.traderBid?.orderIds || []),
-        ];
-
-        if (valueCoin % indexGroupSelect === 0) {
-          newBid = {
-            ...tick,
-            tickBid: {
-              ...tick.tickBid,
-              value: valueBid / PADDING,
-            },
-            traderBid: {
-              ...tick.traderBid,
-              value: valueTraderBid / PADDING,
-              orderIds: newOrderIds,
-            },
-            tickAsk: {
-              ...tick.tickAsk,
-              value: 0,
-            },
-          };
-        } else {
-          if (valueNewBid === 0) {
-            newBid = {
-              ...tick,
-              tickBid: {
-                ...tick.tickBid,
-                value: valueBid / PADDING,
-              },
-              tickAsk: {
-                ...tick.tickAsk,
-                value: 0,
-              },
-              traderBid: {
-                ...tick.traderBid,
-                value: valueTraderBid / PADDING,
-                orderIds: newOrderIds,
-              },
-            };
-          } else {
-            newBid = {
-              ...newBid,
-              tickBid: {
-                ...newBid.tickBid,
-                value: valueBid / PADDING,
-              },
-              tickAsk: {
-                ...newBid.tickAsk,
-                value: 0,
-              },
-              traderBid: {
-                ...newBid.traderBid,
-                value: valueTraderBid / PADDING,
-                orderIds: newOrderIds,
-              },
-            };
-          }
-        }
-        if (
-          index === lengthNewDataLadder - 1 ||
-          valueCoin % indexGroupSelect === 0
-        ) {
-          newTicks.push(newBid);
-          newBid = {};
-        }
-      }
-      const itemLastBid = newTicks[newTicks.length - 1];
-      if (
-        itemLastBid.tickPrices.value * PADDING_PRODUCT * indexGroupSelect !==
-        0
-      ) {
-        newTicks[newTicks.length - 1].tickPrices.value = handleReturnValueBid(
-          newTicks[newTicks.length - 1].tickPrices.value
-        );
-      }
-      setTicks(newTicks);
+      handleRenderDataBid();
     }
   }, [dataLadder, typeGroup, indexGroupSelect]);
 
@@ -334,7 +404,7 @@ export default function GroupItem({
     ticks.map((item, indexBf) => {
       const valueAsk = `${item.tickAsk?.value?.toString() || 0}` * 1 * 100000;
       const valueBid = `${item.tickBid?.value?.toString() || 0}` * 1 * 100000;
-      if (index === 0 && indexBf === 0) {
+      if (index === 0 && indexBf === 0 && !isBid) {
         return;
       } else {
         if (indexBf <= index && totalBefore.totalBid && isBid) {
@@ -353,7 +423,6 @@ export default function GroupItem({
     });
     return totalBefore;
   };
-
   return (
     <>
       {ticks.map((tick, index) => {

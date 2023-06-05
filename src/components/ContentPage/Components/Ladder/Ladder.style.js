@@ -177,6 +177,7 @@ export const LadderWrapper = styled.div`
   position: relative;
   -ms-overflow-style: none; /* IE and Edge */
   scrollbar-width: none; /* Firefox */
+  pointer-events: ${({ event }) => (event ? 'auto' : 'none')};
 
   /* Hide scrollbar for Chrome, Safari and Opera */
   &::-webkit-scrollbar {
@@ -268,7 +269,16 @@ export const Collapse = styled.div`
   background: #0e879c;
   display: flex;
   justify-content: flex-start;
-  z-index: 10;
+  z-index: 5;
+
+  .new-data {
+    position: absolute;
+    font-size: 14px;
+    margin: 0px;
+    padding: 0px;
+    left: 20px;
+    top: -18px;
+  }
 `;
 
 export const WrapperIcon = styled.div`
@@ -282,7 +292,7 @@ export const WrapperIcon = styled.div`
   justify-content: center;
   align-items: center;
   border-radius: 4px;
-
+  overflow: hidden;
   img {
     width: 100%;
     height: 28px;
@@ -308,6 +318,6 @@ export const LadderColumn = styled.div`
 
 export const WrapperLadderGroup = styled.div`
   width: 100%;
-  display: flex;
+  display: ${({ display }) => display || 'flex'};
   flex-direction: column;
 `;

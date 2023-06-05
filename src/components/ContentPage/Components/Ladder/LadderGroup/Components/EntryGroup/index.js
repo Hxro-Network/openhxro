@@ -3,6 +3,7 @@ import { useState } from 'react';
 import { useEffect } from 'react';
 import { StyledLadder } from '../../../Ladder.style';
 import Tick from '../../../Tick';
+import cloneDeep from 'lodash.clonedeep';
 
 export default function EntryGroup({
   indexAsk,
@@ -25,7 +26,7 @@ export default function EntryGroup({
 
   useEffect(() => {
     if (indexAsk !== 0 && indexBid !== 0 && !!dataLadder?.length) {
-      const newDataLadder = [...dataLadder].slice(indexAsk, indexBid);
+      const newDataLadder = cloneDeep(dataLadder).slice(indexAsk, indexBid);
       const newTick = [];
       const length = newDataLadder?.length || 0;
       if (length) {
@@ -39,7 +40,6 @@ export default function EntryGroup({
           }
         }
       }
-
       newTicks(newTick);
     }
   }, [dataLadder, indexAsk, indexBid]);

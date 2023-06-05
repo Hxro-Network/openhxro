@@ -39,7 +39,9 @@ const Header = () => {
   const [dataWallet, setDataWallet] = useState({});
   const [openModal, setOpenModal] = useState(false);
   const [refresh, setRefresh] = useState(false);
+
   const refTimeOut = useRef();
+  const refTimeOutLoading = useRef();
 
   useEffect(() => {
     const provider = localStorage.getItem('provider');
@@ -70,6 +72,17 @@ const Header = () => {
       setAccountSelect(dataPnL?.listAccounts?.[0] || '');
     }
   }, [JSON.stringify(dataPnL.listAccounts || []), accountSelect]);
+
+  useEffect(() => {
+    if (loading && !refTimeOutLoading.current) {
+      refTimeOutLoading.current = setTimeout(() => {
+        const href = window.location.href;
+        window.location.href = href;
+      }, 10000);
+    } else {
+      window.clearTimeout(refTimeOutLoading.current);
+    }
+  }, [loading]);
 
   const handleClickConnect = () => {
     setLoading(true);
@@ -112,12 +125,14 @@ const Header = () => {
       setRefresh(false);
     }
   };
+
   const handleClickWalletPubkey = () => {
     window.open(
       `${process.env.URL_SOLANA}${dataPnL?.walletPubkeyHref}`,
       '_blank'
     );
   };
+
   const renderModal = useMemo(() => {
     return (
       <ModalComponent

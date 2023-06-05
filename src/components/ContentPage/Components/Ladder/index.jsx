@@ -6,6 +6,8 @@ import { useWallet } from '@hooks/useWallet';
 import Dropdown from '@components/Dropdown';
 import IconLoading from '@components/IconLoading';
 import Tick from './Tick';
+import cloneDeep from 'lodash.clonedeep';
+
 import {
   ProjectWrapper,
   LadderWrapper,
@@ -100,7 +102,12 @@ const Ladder = () => {
   const [indexGroupSelect, setIndexGroupSelect] = useState(0);
   const [isSelectGroup, setIsSelectGroup] = useState(false);
   const [isMouseEnter, setIsMouseEnter] = useState(false);
+  const [hadNewData, setHadNewData] = useState(false);
   const firstLoad = useRef(false);
+  const refPrevProduct = useRef('BTCUSD-PERP');
+  const pointEvent = useRef(true);
+  const refIndexMaxBid = useRef(0);
+  const refIndexMinAsk = useRef(0);
 
   const products = useMemo(() => {
     return productsListKey.map((item) => {
@@ -109,7 +116,6 @@ const Ladder = () => {
   }, [productsListKey]);
 
   const PADDING = 100000;
-
   /**
    *
    * @param {product} void
@@ -119,6 +125,15 @@ const Ladder = () => {
     onSelectPrice('');
     firstLoad.current = false;
     setIsCollapse(true);
+    setIsMouseEnter(false);
+    setHadNewData(false);
+    pointEvent.current = false;
+    refIndexMaxBid.current = 0;
+    refIndexMinAsk.current = 0;
+    setTimeout(() => {
+      pointEvent.current = true;
+    }, 3500);
+    setNewTicks([]);
     changeProduct(`${product.value}`.trim());
     setSelectedProduct(product);
     const index = products.findIndex(({ value }) => value === product.value);
@@ -301,6 +316,10 @@ const Ladder = () => {
    */
   const handleSelectGroup = (group) => {
     setGroupSelected(group);
+    pointEvent.current = false;
+    setTimeout(() => {
+      pointEvent.current = true;
+    }, 500);
     if (group.value === groupSelectForProduct[0].value) {
       setIsSelectGroup(false);
       setIndexGroupSelect(0);
@@ -314,11 +333,12 @@ const Ladder = () => {
   };
 
   useEffect(() => {
-    if (!isCollapse) {
+    if (!isCollapse || !newTicks?.length) {
       setNewTicks(ticks);
       return;
     }
-    if (!isMouseEnter) {
+    if (!isMouseEnter || refPrevProduct.current !== `${productSelect}`.trim()) {
+      refPrevProduct.current = `${productSelect}`.trim();
       const newDataLadder = ticks.map((item) => {
         return {
           ask: item?.tickAsk?.value ? item?.tickAsk?.value * 1 : 0,
@@ -353,6 +373,8 @@ const Ladder = () => {
           };
         }
       });
+      refIndexMaxBid.current = maxBid.index;
+      refIndexMinAsk.current = minAsk.index;
 
       if (maxBid.index !== minAsk.index) {
         const ticksNew = ticks.map((item, index) => {
@@ -374,81 +396,69 @@ const Ladder = () => {
 
   useEffect(() => {
     if (newTicks?.length && isMouseEnter) {
-      const dataNewTicks = newTicks.map((item) => {
+      const dataNewTicks = cloneDeep(newTicks).map((item) => {
         const tickPrices = `${item?.tickPrices?.value}`.trim();
         const newItem = ticks.find(
           (itemNew) => `${itemNew?.tickPrices?.value}`.trim() === tickPrices
         );
         if (newItem) {
-          return newItem;
+          return {
+            ...newItem,
+            isShowCollapse: item?.isShowCollapse || false,
+            hidden: item?.hidden || false,
+          };
         }
         return item;
       });
-      if (!isCollapse) {
-        setNewTicks(dataNewTicks);
-        return;
-      }
 
-      const newDataLadder = dataNewTicks.map((item) => {
-        return {
-          ask: item?.tickAsk?.value ? item?.tickAsk?.value * 1 : 0,
-          bid: item?.tickBid?.value ? item?.tickBid?.value * 1 : 0,
-        };
-      });
+      setNewTicks(dataNewTicks);
 
-      let maxBid = {
-        ask: 0,
-        bid: 0,
-        index: 0,
-        value: 0,
-      };
-      let minAsk = {
-        ask: 0,
-        bid: 0,
-        index: 0,
-        value: 0,
-      };
-
-      newDataLadder.map((item, index) => {
-        if (item.bid > maxBid.bid && maxBid.bid === 0) {
-          maxBid = {
-            ...item,
-            index,
+      if (isCollapse) {
+        const newDataLadder = dataNewTicks.map((item) => {
+          return {
+            ask: item?.tickAsk?.value ? item?.tickAsk?.value * 1 : 0,
+            bid: item?.tickBid?.value ? item?.tickBid?.value * 1 : 0,
           };
-        }
-        if (item.ask > 0) {
-          minAsk = {
-            ...item,
-            index,
-          };
-        }
-      });
-
-      if (maxBid.index !== minAsk.index) {
-        const ticksNew = dataNewTicks.map((item, index) => {
-          if (index > minAsk.index && index < maxBid.index) {
-            return { ...item, hidden: true };
-          }
-          if (index === minAsk.index) {
-            return { ...item, isShowCollapse: true };
-          }
-          return item;
         });
-        setNewTicks(ticksNew);
-        return;
+
+        let maxBid = {
+          ask: 0,
+          bid: 0,
+          index: 0,
+          value: 0,
+        };
+        let minAsk = {
+          ask: 0,
+          bid: 0,
+          index: 0,
+          value: 0,
+        };
+        newDataLadder.map((item, index) => {
+          if (item.bid > maxBid.bid && maxBid.bid === 0) {
+            maxBid = {
+              ...item,
+              index,
+            };
+          }
+          if (item.ask > 0) {
+            minAsk = {
+              ...item,
+              index,
+            };
+          }
+        });
+        if (
+          maxBid.index !== refIndexMaxBid.current ||
+          minAsk.index !== refIndexMinAsk.current
+        ) {
+          setHadNewData(true);
+        } else {
+          setHadNewData(false);
+        }
       }
-      setNewTicks(ticks);
       return;
     }
   }, [isMouseEnter, ticks, isCollapse]);
-
-  // console.log(
-  //   isMouseEnter,
-  //   newTicks?.[0]?.tickPrices?.value,
-  //   ticks?.[0]?.tickPrices?.value,
-  //   totalSize,
-  //   totalSize?.totalBid > totalSize?.totalAsk
-  // );
 
   useEffect(() => {
     setIsSelectGroup(false);
@@ -496,7 +506,11 @@ const Ladder = () => {
           />
         </ProjectWrapper>
       </WrapperDropdown>
-      <LadderWrapper>
+      <LadderWrapper
+        onMouseEnter={() => setIsMouseEnter(true)}
+        onMouseLeave={() => setIsMouseEnter(false)}
+        event={pointEvent.current}
+      >
         <LadderHeading>
           <div>
             <span>My Bids</span>
@@ -515,11 +529,7 @@ const Ladder = () => {
           </div>
         </LadderHeading>
 
-        <WrapperLadderContent
-          ref={refWrapperLadderContent}
-          onMouseEnter={() => setIsMouseEnter(true)}
-          onMouseLeave={() => setIsMouseEnter(false)}
-        >
+        <WrapperLadderContent ref={refWrapperLadderContent}>
           {/* {newTicks && newTicks.length === 0 && !isConnect && (
             <p>Connect wallet to see live market.</p>
           )} */}
@@ -622,9 +632,22 @@ const Ladder = () => {
                     ))}
                   {tick?.isShowCollapse && (
                     <Collapse>
-                      <WrapperIcon onClick={() => setIsCollapse(false)}>
+                      <WrapperIcon
+                        onClick={() => {
+                          setIsCollapse(false);
+                          setIsMouseEnter(false);
+                          pointEvent.current = false;
+                          setTimeout(() => {
+                            pointEvent.current = true;
+                          }, 2000);
+                          handleFocus();
+                        }}
+                      >
                         <img src={iconHidden} alt="icon" />
                       </WrapperIcon>
+                      {isMouseEnter && hadNewData && (
+                        <p className="new-data">New data</p>
+                      )}
                     </Collapse>
                   )}
                 </StyledLadder>
@@ -632,43 +655,52 @@ const Ladder = () => {
             })}
         </WrapperLadderContent>
 
-        {!!isSelectGroup && (
-          <WrapperLadderGroup>
-            <LadderGroup
-              dataLadder={newTicks}
-              totalSize={totalSize}
-              indexGroupSelect={indexGroupSelect}
-              qtyGlobal={qtyGlobal}
-              handleCancel={handleCancel}
-              handleOrder={handleOrder}
-              product={`${selectedProduct?.value}`.toLowerCase().trim()}
-              isCollapse={isCollapse}
-              onSetIsCollapse={setIsCollapse}
-              isConnect={isConnect}
-              onSelectPrice={onSelectPrice}
-            />
-          </WrapperLadderGroup>
-        )}
+        <WrapperLadderGroup display={isSelectGroup ? '' : 'none'}>
+          <LadderGroup
+            dataLadder={cloneDeep(newTicks)}
+            totalSize={totalSize}
+            indexGroupSelect={indexGroupSelect}
+            qtyGlobal={qtyGlobal}
+            handleCancel={handleCancel}
+            handleOrder={handleOrder}
+            product={`${selectedProduct?.value}`.toLowerCase().trim()}
+            isCollapse={isCollapse}
+            onSetIsCollapse={() => {
+              setIsCollapse(false);
+              setIsMouseEnter(false);
+              pointEvent.current = false;
+              setTimeout(() => {
+                pointEvent.current = true;
+              }, 2000);
+              handleFocus();
+            }}
+            isConnect={isConnect}
+            onSelectPrice={onSelectPrice}
+            hadNewData={hadNewData}
+            isMouseEnter={isMouseEnter}
+          />
+        </WrapperLadderGroup>
+
         {!ticks?.length && (
           <WrapperLoading>
             <IconLoading isWhite />
           </WrapperLoading>
         )}
+        <WrapperButton>
+          <ButtonClick
+            onClick={() => {
+              setIsCollapse(!isCollapse);
+              handleFocus();
+              setIsMouseEnter(false);
+            }}
+          >
+            <img src={isCollapse ? iconHidden : iconUnHidden} alt="icon" />
+          </ButtonClick>
+          <ButtonClick onClick={handleFocus} disabled={isCollapse}>
+            <img src={iconFocus} alt="icon" />
+          </ButtonClick>
+        </WrapperButton>
       </LadderWrapper>
-
-      <WrapperButton>
-        <ButtonClick
-          onClick={() => {
-            setIsCollapse(!isCollapse);
-            handleFocus();
-          }}
-        >
-          <img src={isCollapse ? iconHidden : iconUnHidden} alt="icon" />
-        </ButtonClick>
-        <ButtonClick onClick={handleFocus} disabled={isCollapse}>
-          <img src={iconFocus} alt="icon" />
-        </ButtonClick>
-      </WrapperButton>
     </WrapperLadders>
   );
 };
