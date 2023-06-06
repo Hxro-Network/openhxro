@@ -562,9 +562,7 @@ const Ladder = () => {
                       id={`tooltip_${index}_tickBid`}
                       hasCursor
                       data={tick.tickBid}
-                      tooltip={`Buy ${
-                        tick.tickBid.value > 0 ? tick.tickBid.value : qtyGlobal
-                      } @ ${tick.tickBid.tickPrice}`}
+                      tooltip={`Buy ${qtyGlobal} @ ${tick.tickBid.tickPrice}`}
                       onOrder={handleOrder}
                       isBackgroundBid
                       isShowBackground
@@ -593,9 +591,7 @@ const Ladder = () => {
                       id={`tooltip_${index}_tickAsk`}
                       hasCursor
                       data={tick.tickAsk}
-                      tooltip={`Sell ${
-                        tick.tickAsk.value > 0 ? tick.tickAsk.value : qtyGlobal
-                      } @ ${tick.tickAsk.tickPrice}`}
+                      tooltip={`Sell ${qtyGlobal} @ ${tick.tickAsk.tickPrice}`}
                       onOrder={handleOrder}
                       totalSize={totalSize?.totalAsk || 0}
                       totalBefore={

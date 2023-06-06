@@ -453,9 +453,7 @@ export default function GroupItem({
                 id={`tooltip_${index}_tickBid_${typeGroup}`}
                 hasCursor
                 data={tick.tickBid}
-                tooltip={`Buy ${
-                  tick.tickBid.value > 0 ? tick.tickBid.value : qtyGlobal
-                } @ ${tick.tickPrices?.value}`}
+                tooltip={`Buy ${qtyGlobal} @ ${tick.tickPrices?.value}`}
                 onOrder={handleOrder}
                 isBackgroundBid
                 isShowBackground={typeGroup === 'bid'}
@@ -483,9 +481,7 @@ export default function GroupItem({
                 id={`tooltip_${index}_tickAsk_${typeGroup}`}
                 hasCursor
                 data={tick.tickAsk}
-                tooltip={`Sell ${
-                  tick.tickAsk.value > 0 ? tick.tickAsk.value : qtyGlobal
-                } @ ${tick.tickPrices?.value}`}
+                tooltip={`Sell ${qtyGlobal} @ ${tick.tickPrices?.value}`}
                 onOrder={handleOrder}
                 totalSize={totalSize?.totalAsk || 0}
                 totalBefore={
