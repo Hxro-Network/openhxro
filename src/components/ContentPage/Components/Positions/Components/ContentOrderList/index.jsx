@@ -28,6 +28,7 @@ function ContentOrderList({ productsListKey, isConnect, accountSelect }) {
       }
       const lenProductList = products?.length || 0;
       const dataFills = [];
+      let isError = false;
       for (let index = 0; index < lenProductList; index++) {
         const product = products[index];
         await getYourFills(`${product}`.trim(), wallet)
@@ -40,7 +41,11 @@ function ContentOrderList({ productsListKey, isConnect, accountSelect }) {
           })
           .catch((err) => {
             console.log(err);
+            isError = true;
           });
+        if (isError) {
+          break;
+        }
       }
       if (refConnect.current) {
         const newDataFills = dataFills.sort((a, b) => {
@@ -49,7 +54,9 @@ function ContentOrderList({ productsListKey, isConnect, accountSelect }) {
           }
           return 1;
         });
-        setDataFills(newDataFills);
+        if (!isError) {
+          setDataFills(newDataFills);
+        }
       }
       // setLoading(false);
     } catch (error) {
