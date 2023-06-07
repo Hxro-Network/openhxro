@@ -38,6 +38,7 @@ export const WrapperContentModal = styled.div`
     border-radius: 20px;
     color: #fff;
     border: 0px;
+    margin-bottom: 10px;
     background: #1d8898;
     transition: all 0.3s;
     :active {
