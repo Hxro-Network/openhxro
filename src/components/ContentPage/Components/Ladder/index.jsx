@@ -520,9 +520,12 @@ const Ladder = () => {
         </ProjectWrapper>
       </WrapperDropdown>
       <LadderWrapper
-        onMouseEnter={() => setIsMouseEnter(true)}
+        onMouseEnter={() => {
+          newTicks?.length && setIsMouseEnter(true);
+        }}
         onMouseLeave={() => setIsMouseEnter(false)}
         event={pointEvent.current}
+        hover={isMouseEnter}
       >
         <LadderHeading>
           <div>
@@ -707,6 +710,9 @@ const Ladder = () => {
               refFocus.current = true;
               handleFocus();
               setIsMouseEnter(false);
+              setTimeout(() => {
+                setIsMouseEnter(true);
+              }, 2000);
             }}
           >
             <img src={isCollapse ? iconHidden : iconUnHidden} alt="icon" />

@@ -166,7 +166,6 @@ export const LadderWrapper = styled.div`
   display: flex;
   flex-direction: column;
   width: 100%;
-  /* background: #151c28; */
   border-right: 1px solid #262c2e;
   border-bottom: 1px solid #262c2e;
   text-align: center;
@@ -178,6 +177,13 @@ export const LadderWrapper = styled.div`
   -ms-overflow-style: none; /* IE and Edge */
   scrollbar-width: none; /* Firefox */
   pointer-events: ${({ event }) => (event ? 'auto' : 'none')};
+
+  box-shadow: ${({ hover }) =>
+    hover ? '1px 1px 16px 1px rgba(71,197,216,0.8) inset' : 'none'};
+  -webkit-box-shadow: ${({ hover }) =>
+    hover ? '1px 1px 16px 1px rgba(71,197,216,0.8) inset' : 'none'};
+  -moz-box-shadow: ${({ hover }) =>
+    hover ? '1px 1px 16px 1px rgba(71,197,216,0.8) inset' : 'none'};
 
   /* Hide scrollbar for Chrome, Safari and Opera */
   &::-webkit-scrollbar {
