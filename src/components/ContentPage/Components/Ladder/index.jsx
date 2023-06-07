@@ -103,11 +103,13 @@ const Ladder = () => {
   const [isSelectGroup, setIsSelectGroup] = useState(false);
   const [isMouseEnter, setIsMouseEnter] = useState(false);
   const [hadNewData, setHadNewData] = useState(false);
-  const firstLoad = useRef(false);
+  const firstLoad = useRef(0);
   const refPrevProduct = useRef('BTCUSD-PERP');
   const pointEvent = useRef(true);
   const refIndexMaxBid = useRef(0);
   const refIndexMinAsk = useRef(0);
+  const refContentLadder = useRef();
+  const refFocus = useRef(false);
 
   const products = useMemo(() => {
     return productsListKey.map((item) => {
@@ -123,7 +125,7 @@ const Ladder = () => {
    */
   const handleSelectProduct = (product) => {
     onSelectPrice('');
-    firstLoad.current = false;
+    firstLoad.current = 0;
     setIsCollapse(true);
     setIsMouseEnter(false);
     setHadNewData(false);
@@ -230,19 +232,26 @@ const Ladder = () => {
   /**
    * scroll to center ladder
    */
-  const handleFocus = (firstLoad = false) => {
-    if (refWrapperLadderContent.current) {
-      const ladderContent = refWrapperLadderContent.current;
-      if (newTicks.length) {
-        const top = firstLoad
-          ? (newTicks.length / 2) * 8
-          : (newTicks.length / 2 / 2) * 18;
-        ladderContent.scroll({
+  const handleFocus = () => {
+    setTimeout(() => {
+      if (
+        refWrapperLadderContent.current &&
+        newTicks.length &&
+        refFocus.current &&
+        refContentLadder.current
+      ) {
+        refFocus.current = false;
+        const wrapperLadderContent = refWrapperLadderContent.current;
+        const ladderContent = refContentLadder.current;
+        const heightContent = (wrapperLadderContent?.clientHeight || 0) / 2;
+        const totalHeightLadder = (ladderContent.clientHeight || 0) / 2;
+        const top = totalHeightLadder - heightContent + 20;
+        wrapperLadderContent.scroll({
           top: top,
           behavior: 'smooth',
         });
       }
-    }
+    }, 500);
   };
 
   /**
@@ -317,8 +326,10 @@ const Ladder = () => {
   const handleSelectGroup = (group) => {
     setGroupSelected(group);
     pointEvent.current = false;
+    refFocus.current = true;
     setTimeout(() => {
       pointEvent.current = true;
+      handleFocus();
     }, 500);
     if (group.value === groupSelectForProduct[0].value) {
       setIsSelectGroup(false);
@@ -482,9 +493,11 @@ const Ladder = () => {
   }, [productSelect]);
 
   useEffect(() => {
-    if (!firstLoad.current && !!newTicks?.length) {
-      firstLoad.current = true;
-      handleFocus(true);
+    if (firstLoad.current < 2 && !!newTicks?.length) {
+      if (firstLoad.current > 0) {
+        handleFocus();
+      }
+      firstLoad.current = firstLoad.current + 1;
     }
   }, [JSON.stringify(newTicks)]);
 
@@ -533,122 +546,127 @@ const Ladder = () => {
           {/* {newTicks && newTicks.length === 0 && !isConnect && (
             <p>Connect wallet to see live market.</p>
           )} */}
-          {!isSelectGroup &&
-            newTicks.map((tick, index) => {
-              return (
-                <StyledLadder key={index} hidden={tick?.hidden || false}>
-                  {tick.traderBid &&
-                    (tick.traderBid.size > 0 ? (
+          <div ref={refContentLadder}>
+            {!isSelectGroup &&
+              newTicks.map((tick, index) => {
+                if (index === newTicks?.length - 1) {
+                  refFocus.current = true;
+                }
+                return (
+                  <StyledLadder key={index} hidden={tick?.hidden || false}>
+                    {tick.traderBid &&
+                      (tick.traderBid.size > 0 ? (
+                        <Tick
+                          id={`tooltip_${index}_traderBid`}
+                          hasCursor
+                          data={tick.traderBid}
+                          tooltip={`Cancel buy ${tick.traderBid.size}`}
+                          onCancel={handleCancel}
+                          isConnect={isConnect}
+                          valuePrice={tick.tickPrices?.value || '0'}
+                          onSelectPrice={onSelectPrice}
+                        />
+                      ) : (
+                        <Tick
+                          hasCursor={false}
+                          data={tick.traderBid}
+                          valuePrice={tick.tickPrices?.value || '0'}
+                          onSelectPrice={onSelectPrice}
+                        />
+                      ))}
+                    {tick.tickBid && (
                       <Tick
-                        id={`tooltip_${index}_traderBid`}
+                        id={`tooltip_${index}_tickBid`}
                         hasCursor
-                        data={tick.traderBid}
-                        tooltip={`Cancel buy ${tick.traderBid.size}`}
-                        onCancel={handleCancel}
+                        data={tick.tickBid}
+                        tooltip={`Buy ${qtyGlobal} @ ${tick.tickBid.tickPrice}`}
+                        onOrder={handleOrder}
+                        isBackgroundBid
+                        isShowBackground
+                        totalSize={totalSize?.totalBid || 0}
+                        totalBefore={
+                          handleReturnTotalBefore(totalSize, index, true)
+                            ?.totalBid
+                        }
+                        totalSizeSecond={totalSize?.totalAsk || 0}
                         isConnect={isConnect}
                         valuePrice={tick.tickPrices?.value || '0'}
                         onSelectPrice={onSelectPrice}
                       />
-                    ) : (
+                    )}
+                    {tick.tickPrices && (
                       <Tick
                         hasCursor={false}
-                        data={tick.traderBid}
+                        data={tick.tickPrices}
+                        index={index}
                         valuePrice={tick.tickPrices?.value || '0'}
                         onSelectPrice={onSelectPrice}
                       />
-                    ))}
-                  {tick.tickBid && (
-                    <Tick
-                      id={`tooltip_${index}_tickBid`}
-                      hasCursor
-                      data={tick.tickBid}
-                      tooltip={`Buy ${qtyGlobal} @ ${tick.tickBid.tickPrice}`}
-                      onOrder={handleOrder}
-                      isBackgroundBid
-                      isShowBackground
-                      totalSize={totalSize?.totalBid || 0}
-                      totalBefore={
-                        handleReturnTotalBefore(totalSize, index, true)
-                          ?.totalBid
-                      }
-                      totalSizeSecond={totalSize?.totalAsk || 0}
-                      isConnect={isConnect}
-                      valuePrice={tick.tickPrices?.value || '0'}
-                      onSelectPrice={onSelectPrice}
-                    />
-                  )}
-                  {tick.tickPrices && (
-                    <Tick
-                      hasCursor={false}
-                      data={tick.tickPrices}
-                      index={index}
-                      valuePrice={tick.tickPrices?.value || '0'}
-                      onSelectPrice={onSelectPrice}
-                    />
-                  )}
-                  {tick.tickAsk && (
-                    <Tick
-                      id={`tooltip_${index}_tickAsk`}
-                      hasCursor
-                      data={tick.tickAsk}
-                      tooltip={`Sell ${qtyGlobal} @ ${tick.tickAsk.tickPrice}`}
-                      onOrder={handleOrder}
-                      totalSize={totalSize?.totalAsk || 0}
-                      totalBefore={
-                        handleReturnTotalBefore(totalSize, index, false)
-                          ?.totalAsk
-                      }
-                      isShowBackground
-                      totalSizeSecond={totalSize?.totalBid || 0}
-                      isConnect={isConnect}
-                      valuePrice={tick.tickPrices?.value || '0'}
-                      onSelectPrice={onSelectPrice}
-                    />
-                  )}
-                  {tick.traderAsk &&
-                    (tick.traderAsk.size > 0 ? (
+                    )}
+                    {tick.tickAsk && (
                       <Tick
-                        id={`tooltip_${index}_traderAsk`}
+                        id={`tooltip_${index}_tickAsk`}
                         hasCursor
-                        data={tick.traderAsk}
-                        tooltip={`Cancel sell ${tick.traderAsk.size}`}
-                        onCancel={handleCancel}
+                        data={tick.tickAsk}
+                        tooltip={`Sell ${qtyGlobal} @ ${tick.tickAsk.tickPrice}`}
+                        onOrder={handleOrder}
+                        totalSize={totalSize?.totalAsk || 0}
+                        totalBefore={
+                          handleReturnTotalBefore(totalSize, index, false)
+                            ?.totalAsk
+                        }
+                        isShowBackground
+                        totalSizeSecond={totalSize?.totalBid || 0}
                         isConnect={isConnect}
                         valuePrice={tick.tickPrices?.value || '0'}
                         onSelectPrice={onSelectPrice}
                       />
-                    ) : (
-                      <Tick
-                        hasCursor={false}
-                        data={tick.traderAsk}
-                        isConnect={isConnect}
-                        valuePrice={tick.tickPrices?.value || '0'}
-                        onSelectPrice={onSelectPrice}
-                      />
-                    ))}
-                  {tick?.isShowCollapse && (
-                    <Collapse>
-                      <WrapperIcon
-                        onClick={() => {
-                          setIsCollapse(false);
-                          setIsMouseEnter(false);
-                          pointEvent.current = false;
-                          setTimeout(() => {
-                            pointEvent.current = true;
-                          }, 2000);
-                          handleFocus();
-                        }}
-                      >
-                        <img src={iconHidden} alt="icon" />
-                      </WrapperIcon>
-                      {isMouseEnter && hadNewData && (
-                        <p className="new-data">New data</p>
-                      )}
-                    </Collapse>
-                  )}
-                </StyledLadder>
-              );
-            })}
+                    )}
+                    {tick.traderAsk &&
+                      (tick.traderAsk.size > 0 ? (
+                        <Tick
+                          id={`tooltip_${index}_traderAsk`}
+                          hasCursor
+                          data={tick.traderAsk}
+                          tooltip={`Cancel sell ${tick.traderAsk.size}`}
+                          onCancel={handleCancel}
+                          isConnect={isConnect}
+                          valuePrice={tick.tickPrices?.value || '0'}
+                          onSelectPrice={onSelectPrice}
+                        />
+                      ) : (
+                        <Tick
+                          hasCursor={false}
+                          data={tick.traderAsk}
+                          isConnect={isConnect}
+                          valuePrice={tick.tickPrices?.value || '0'}
+                          onSelectPrice={onSelectPrice}
+                        />
+                      ))}
+                    {tick?.isShowCollapse && (
+                      <Collapse>
+                        <WrapperIcon
+                          onClick={() => {
+                            setIsCollapse(false);
+                            setIsMouseEnter(false);
+                            pointEvent.current = false;
+                            setTimeout(() => {
+                              pointEvent.current = true;
+                            }, 2000);
+                            handleFocus();
+                          }}
+                        >
+                          <img src={iconHidden} alt="icon" />
+                        </WrapperIcon>
+                        {isMouseEnter && hadNewData && (
+                          <p className="new-data">New data</p>
+                        )}
+                      </Collapse>
+                    )}
+                  </StyledLadder>
+                );
+              })}
+          </div>
         </WrapperLadderContent>
 
         <WrapperLadderGroup display={isSelectGroup ? '' : 'none'}>
@@ -686,13 +704,19 @@ const Ladder = () => {
           <ButtonClick
             onClick={() => {
               setIsCollapse(!isCollapse);
+              refFocus.current = true;
               handleFocus();
               setIsMouseEnter(false);
             }}
           >
             <img src={isCollapse ? iconHidden : iconUnHidden} alt="icon" />
           </ButtonClick>
-          <ButtonClick onClick={handleFocus} disabled={isCollapse}>
+          <ButtonClick
+            onClick={() => {
+              refFocus.current = true;
+              handleFocus();
+            }}
+          >
             <img src={iconFocus} alt="icon" />
           </ButtonClick>
         </WrapperButton>

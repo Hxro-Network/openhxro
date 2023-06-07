@@ -204,11 +204,11 @@ export const LadderHeading = styled.div`
 `;
 
 export const StyledLadder = styled.div`
-  display: ${({ hidden }) => (hidden ? 'none' : 'fles')};
+  display: ${({ hidden }) => (hidden ? 'none' : 'flex')};
   justify-content: space-around;
   align-items: center;
   flex-direction: row;
-  height: 30px;
+  height: ${({ hidden }) => (hidden ? '0px' : '30px')};
   width: 100%;
   position: relative;
 
