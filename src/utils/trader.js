@@ -59,6 +59,9 @@ class TraderFunction {
       : this.dexterity.Fractional.Zero();
     const pnl = pnlValue?.toString(2);
 
+    const withdrawable =
+      this.trader?.getExcessMarginUntilUnhealthy()?.toString(2, true) || 0;
+
     const newData = {
       listAccounts: this.listAccounts,
       walletPubkeyHref: this.walletPubkeyHref,
@@ -68,6 +71,7 @@ class TraderFunction {
       requiredMargin,
       excessMargin,
       pnl,
+      withdrawable,
       dataOption: this.dataOption,
     };
     return newData;

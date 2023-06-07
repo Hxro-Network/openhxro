@@ -52,7 +52,7 @@ function ContentWithdraw({ onClose }) {
       </WrapperRow>
       <WrapperRow>
         <TitleRow>Withdrawal limit</TitleRow>
-        <ValueRow>0 USDC</ValueRow>
+        <ValueRow>${dataPnL?.withdrawable || '-'} USDC</ValueRow>
       </WrapperRow>
 
       {/* <WrapperRow>
