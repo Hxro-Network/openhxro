@@ -19,7 +19,9 @@ function ContentOrder({ dataOrders, productsListKey }) {
   const TITLE_LIST = ['Instrument', 'Side', 'Qty', 'Price', 'ID', 'button'];
 
   const handleClickCancel = (product, id) => {
-    const idToast = toast.loading(toastUICancelOrder.loading);
+    const idToast = toast.loading(toastUICancelOrder.loading, {
+      closeButton: true,
+    });
     try {
       const index =
         productsListKey.findIndex(
@@ -89,7 +91,7 @@ function ContentOrder({ dataOrders, productsListKey }) {
       </WrapperTitle>
       <ContentOrders>
         {!!dataOrders?.length &&
-          dataOrders.map((item, index) => {
+          dataOrders.map((item) => {
             const len = `${item?.id}`.length;
             return (
               <WrapperRowContent

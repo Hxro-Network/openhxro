@@ -143,6 +143,7 @@ export const WalletProvider = ({ children }) => {
    */
   const handleGetDataLadder = async (product, productList, connected) => {
     if (!traderFunction || !traderFunction?.activeMpg || !product) return;
+    window.dexterity = traderFunction.dexterity;
     const manifest = await traderFunction.getManifest(true);
     if (!manifest) return;
     refRenderLadder.current = await createLadder(

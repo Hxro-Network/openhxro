@@ -42,6 +42,7 @@ const Header = () => {
   const [openModalAccount, setOpenModalAccount] = useState(false);
 
   const [refresh, setRefresh] = useState(false);
+
   const refTimeOut = useRef();
 
   useEffect(() => {
@@ -115,12 +116,14 @@ const Header = () => {
       setRefresh(false);
     }
   };
+
   const handleClickWalletPubkey = () => {
     window.open(
       `${process.env.URL_SOLANA}${dataPnL?.walletPubkeyHref}`,
       '_blank'
     );
   };
+
   const renderModal = useMemo(() => {
     return (
       <ModalComponent

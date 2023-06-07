@@ -134,7 +134,7 @@ function Sweep() {
         <Title> Quantity</Title>
         <Input
           type="number"
-          value={qtyGlobal === 0 || qtyGlobal === '0' ? '.0' : qtyGlobal}
+          value={qtyGlobal}
           onChange={(e) => {
             setQtyGlobal(e?.target?.value || '');
           }}
