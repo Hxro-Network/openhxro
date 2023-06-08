@@ -35,16 +35,16 @@ function ContentDeposit({ onClose }) {
   };
   return (
     <WrapperContentDeposit>
-      <Label>
+      {/* <Label>
         Deposited assets automatically earn yield through lending.{' '}
         <a href="/" className="link-more">
           Learn more.
         </a>
-      </Label>
+      </Label> */}
 
       <WrapperTitle>
         <Title>Transfer type and Amount</Title>
-        <LabelNote>Deposit APR 1.3015% </LabelNote>
+        {/* <LabelNote>Deposit APR 1.3015% </LabelNote> */}
       </WrapperTitle>
       <SelectCoin value={value} handleOnChange={setValue} />
 

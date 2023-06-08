@@ -26,7 +26,7 @@ export const WrapperTitle = styled.div`
   width: 100%;
   justify-content: space-between;
   text-align: center;
-  margin-bottom: 8px;
+  margin: 8px 0px;
 `;
 
 export const Title = styled.p`
