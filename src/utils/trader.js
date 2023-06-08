@@ -80,22 +80,24 @@ class TraderFunction {
   async returnDataOrder() {
     if (this.trader) {
       const rows = [];
-      const openOrders = await this.trader.getOpenOrders();
+      const openOrders = await this.trader?.getOpenOrders?.();
 
-      openOrders.forEach((order) => {
-        let side = 'BUY';
-        if (!order.isBid) {
-          side = 'SELL';
-        }
-        rows.push({
-          instrument: order.productName,
-          productIndex: order.productIndex,
-          id: order.id,
-          price: order.price,
-          qty: order.qty,
-          side: side,
+      if (openOrders) {
+        openOrders.forEach((order) => {
+          let side = 'BUY';
+          if (!order.isBid) {
+            side = 'SELL';
+          }
+          rows.push({
+            instrument: order.productName,
+            productIndex: order.productIndex,
+            id: order.id,
+            price: order.price,
+            qty: order.qty,
+            side: side,
+          });
         });
-      });
+      }
 
       return rows;
     }

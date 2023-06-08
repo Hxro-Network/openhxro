@@ -64,8 +64,7 @@ export const WalletProvider = ({ children }) => {
   const refTimeOutGetLadder = useRef(null);
   const refTimeOutGetLadderNoneWallet = useRef(null);
   const refInterValGetLadderNoneWallet = useRef(null);
-
-  // const refTimeOutGetYourFills = useRef(null);
+  const refIsDisconnect = useRef(true);
 
   const refRenderLadder = useRef();
 
@@ -268,11 +267,12 @@ export const WalletProvider = ({ children }) => {
    */
   const connectWallet = (wallet) => {
     refRenderLadder.current = null;
+    refIsDisconnect.current = false;
     window.clearTimeout(refTimeOutGetLadder.current);
     traderFunction.connect(`${wallet}`.toLowerCase(), async (data) => {
       refIsConnect.current = true;
       setLoading(false);
-      if (refIsConnect.current) {
+      if (refIsConnect.current && !refIsDisconnect.current) {
         window.clearInterval(refInterValGetLadderNoneWallet.current);
         localStorage.setItem('provider', `${wallet}`.toLowerCase());
         setIsContent(true);
@@ -295,7 +295,6 @@ export const WalletProvider = ({ children }) => {
           typeof refRenderLadder.current.getDataLadder === 'function'
         ) {
           refRenderLadder.current.getDataLadder((data) => {
-            // console.log('đata', data);
             if (refIsConnect.current) {
               setMarkPriceList(data?.markPriceList);
               setDataLadder(data.ticks);
@@ -315,6 +314,7 @@ export const WalletProvider = ({ children }) => {
    */
   const disableConnectWallet = () => {
     refIsConnect.current = false;
+    refIsDisconnect.current = true;
     refRenderLadder.current = null;
     setIsContent(false);
     localStorage.removeItem('provider');
@@ -322,7 +322,6 @@ export const WalletProvider = ({ children }) => {
     setDataOrders([]);
     setDataPosition([]);
     setDataMarket([]);
-    setDataLadder([]);
     setAccountSelect('');
     setUSDBalance(0);
     setCashBalance(0);
