@@ -27,13 +27,10 @@ function Sweep() {
     isConnect,
     productSelect,
   } = useWallet();
+  const PADDING = 1000000;
 
-  const defaultToler = '1';
-
-  const [toler, setToler] = useState(defaultToler);
+  const [toler, setToler] = useState('0.1');
   const [price, SetPrice] = useState('-');
-
-  const refType = useRef('.01');
 
   const handleReturnProduct = (product) => {
     if (`${product}`.toLowerCase().includes('eth')) {
@@ -50,19 +47,14 @@ function Sweep() {
   }, [productSelect]);
 
   useEffect(() => {
-    setToler(valueBet?.[0]);
-    setQtyGlobal(valueBet?.[0]);
-    refType.current = valueBet?.[0];
+    setQtyGlobal(qtyGlobal || valueBet?.[0]);
   }, [productSelect]);
 
   const handleClickItem = (value) => {
-    if (value === refType.current) {
-      const newValue = qtyGlobal * 1 + value * 1;
-      setQtyGlobal(newValue.toFixed(2));
-      return;
-    }
-    refType.current = value;
-    setQtyGlobal(value);
+    const newValue =
+      Math.round(qtyGlobal * PADDING) + Math.round(value * PADDING);
+    setQtyGlobal(`${newValue / PADDING}`);
+    return;
   };
 
   const handleClickBuy = () => {
@@ -133,6 +125,9 @@ function Sweep() {
     }
   };
 
+  const disableButton =
+    !isConnect || !price || qtyGlobal === '0' || qtyGlobal === '';
+
   return (
     <WrapperSweep>
       <WrapperQuantity>
@@ -141,7 +136,7 @@ function Sweep() {
           type="number"
           value={qtyGlobal}
           onChange={(e) => {
-            setQtyGlobal(e?.target?.value || '.01');
+            setQtyGlobal(e?.target?.value || '');
           }}
           className="input"
         />
@@ -154,7 +149,6 @@ function Sweep() {
           value={toler}
           onChange={(e) => {
             setToler(e?.target?.value || '');
-            refType.current = e?.target?.value || defaultToler;
           }}
           className="input"
         />
@@ -171,9 +165,7 @@ function Sweep() {
       </TableValueBet>
       <ButtonClear
         onClick={() => {
-          setQtyGlobal('.01');
-          refType.current = '.01';
-          setToler(defaultToler);
+          setQtyGlobal(valueBet?.[0]);
         }}
       >
         Clear
@@ -181,14 +173,14 @@ function Sweep() {
       <GroupButton>
         <Button
           className="button-buy"
-          disable={!isConnect}
+          disable={disableButton}
           onClick={handleClickBuy}
         >
           Buy
         </Button>
         <Button
           className="button-sell"
-          disable={!isConnect}
+          disable={disableButton}
           onClick={handleClickSell}
         >
           Sell

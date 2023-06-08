@@ -1,4 +1,4 @@
-import React, { memo, useRef, useState } from 'react';
+import React, { memo, useState } from 'react';
 import styled from 'styled-components';
 import { toast } from 'react-toastify';
 import { toastUISenOrder } from '@utils/notify';
@@ -27,14 +27,12 @@ function Mode() {
     productSelect,
     priceSelect,
   } = useWallet();
+  const PADDING = 1000000;
   const [orderType, setOrderType] = useState('Limit');
 
-  const defaultQty = '.01';
   const OPTION_ORDER_TYPE = ['Limit', 'ImmediateOrCancel'];
 
   const [price, setPrice] = useState(priceSelect);
-
-  const refType = useRef('.01');
 
   const handleReturnProduct = (product) => {
     if (`${product}`.toLowerCase().includes('eth')) {
@@ -51,8 +49,7 @@ function Mode() {
   }, [productSelect]);
 
   useEffect(() => {
-    setQtyGlobal(valueBet?.[0]);
-    refType.current = valueBet?.[0];
+    setQtyGlobal(qtyGlobal || valueBet?.[0]);
   }, [productSelect]);
 
   useEffect(() => {
@@ -60,13 +57,10 @@ function Mode() {
   }, [priceSelect]);
 
   const handleClickItem = (value) => {
-    if (value === refType.current) {
-      const newValue = qtyGlobal * 1 + value * 1;
-      setQtyGlobal(newValue.toFixed(2));
-      return;
-    }
-    refType.current = value;
-    setQtyGlobal(value);
+    const newValue =
+      Math.round(qtyGlobal * PADDING) + Math.round(value * PADDING);
+    setQtyGlobal(`${newValue / PADDING}`);
+    return;
   };
 
   const handleClickSell = () => {
@@ -142,11 +136,7 @@ function Mode() {
   };
 
   const disableButton =
-    !isConnect ||
-    !price ||
-    !qtyGlobal ||
-    qtyGlobal === '.0' ||
-    qtyGlobal === '0';
+    !isConnect || !price || qtyGlobal === '0' || qtyGlobal === '';
 
   return (
     <WrapperMode>
@@ -156,7 +146,7 @@ function Mode() {
           type="number"
           value={qtyGlobal}
           onChange={(e) => {
-            setQtyGlobal(e?.target?.value || defaultQty);
+            setQtyGlobal(e?.target?.value || '');
           }}
         />
       </WrapperQuantity>
@@ -211,8 +201,7 @@ function Mode() {
       </TableValueBet>
       <ButtonClear
         onClick={() => {
-          setQtyGlobal(defaultQty);
-          refType.current = defaultQty;
+          setQtyGlobal(valueBet?.[0]);
           setPrice('');
         }}
       >

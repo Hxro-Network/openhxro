@@ -8,6 +8,10 @@ import {
 } from '../Header.style';
 import ContentLeverage from './ContentLeverage';
 
+export const handleRenderValue = (value) => {
+  if (!value) return '-';
+  return `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+};
 const ContentHeader = ({ dataWallet }) => {
   const TITLE_LIST = [
     'Required Margin',
@@ -19,11 +23,6 @@ const ContentHeader = ({ dataWallet }) => {
 
   const handleRenderColor = (value) => {
     return `${value}`.includes('-') ? 'red' : '';
-  };
-
-  const handleRenderValue = (value) => {
-    if (!value) return '-';
-    return `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',');
   };
 
   return (

@@ -35,16 +35,16 @@ function ContentDeposit({ onClose }) {
   };
   return (
     <WrapperContentDeposit>
-      <Label>
+      {/* <Label>
         Deposited assets automatically earn yield through lending.{' '}
         <a href="/" className="link-more">
           Learn more.
         </a>
-      </Label>
+      </Label> */}
 
       <WrapperTitle>
         <Title>Transfer type and Amount</Title>
-        <LabelNote>Deposit APR 1.3015% </LabelNote>
+        {/* <LabelNote>Deposit APR 1.3015% </LabelNote> */}
       </WrapperTitle>
       <SelectCoin value={value} handleOnChange={setValue} />
 
@@ -57,10 +57,10 @@ function ContentDeposit({ onClose }) {
           <ValueRow>2.12M / 10.0M</ValueRow>
         </WrapperRow> */}
 
-      <WrapperRow>
+      {/* <WrapperRow>
         <TitleRow>Cash balance</TitleRow>
         <ValueRow>{(cashBalance * 1).toFixed(2)} USDC</ValueRow>
-      </WrapperRow>
+      </WrapperRow> */}
       {/* <WrapperRow>
         <TitleRow>Net Account Balance (USD)</TitleRow>
         <ValueRow>$0.00</ValueRow>

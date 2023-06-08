@@ -29,11 +29,11 @@ class Ladder {
   getDataLadder(callback) {
     setTimeout(() => {
       try {
-        if (this.isConnect) {
-          if (this.trader?.getCashBalance?.() + '' !== '0') {
-            this.cashBalance = this.trader?.getCashBalance() + '' || 0;
-          }
-        }
+        // if (this.isConnect) {
+        //   if (this.trader?.getCashBalance?.() + '' !== '0') {
+        //     this.cashBalance = this.trader?.getCashBalance() + '' || 0;
+        //   }
+        // }
         let ticks = [];
         const MAX_NUM_LEVELS = 500;
         let openOrderIds = new Set();

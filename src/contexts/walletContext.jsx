@@ -55,7 +55,7 @@ export const WalletProvider = ({ children }) => {
   const [cashBalance, setCashBalance] = useState('');
   const [indexPriceList, setIndexPriceList] = useState({});
   const [fundingRateList, setFundingRateList] = useState({});
-  const [qtyGlobal, setQtyGlobal] = useState('.01');
+  const [qtyGlobal, setQtyGlobal] = useState('');
   const [USDBalance, setUSDBalance] = useState(0);
   const [priceSelect, setPriceSelect] = useState('');
 
@@ -143,6 +143,7 @@ export const WalletProvider = ({ children }) => {
    */
   const handleGetDataLadder = async (product, productList, connected) => {
     if (!traderFunction || !traderFunction?.activeMpg || !product) return;
+    window.dexterity = traderFunction.dexterity;
     const manifest = await traderFunction.getManifest(true);
     if (!manifest) return;
     refRenderLadder.current = await createLadder(

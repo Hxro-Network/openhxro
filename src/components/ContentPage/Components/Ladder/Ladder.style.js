@@ -166,7 +166,6 @@ export const LadderWrapper = styled.div`
   display: flex;
   flex-direction: column;
   width: 100%;
-  /* background: #151c28; */
   border-right: 1px solid #262c2e;
   border-bottom: 1px solid #262c2e;
   text-align: center;
@@ -177,6 +176,14 @@ export const LadderWrapper = styled.div`
   position: relative;
   -ms-overflow-style: none; /* IE and Edge */
   scrollbar-width: none; /* Firefox */
+  pointer-events: ${({ event }) => (event ? 'auto' : 'none')};
+
+  box-shadow: ${({ hover }) =>
+    hover ? '1px 1px 16px 1px rgba(71,197,216,0.8) inset' : 'none'};
+  -webkit-box-shadow: ${({ hover }) =>
+    hover ? '1px 1px 16px 1px rgba(71,197,216,0.8) inset' : 'none'};
+  -moz-box-shadow: ${({ hover }) =>
+    hover ? '1px 1px 16px 1px rgba(71,197,216,0.8) inset' : 'none'};
 
   /* Hide scrollbar for Chrome, Safari and Opera */
   &::-webkit-scrollbar {
@@ -203,11 +210,11 @@ export const LadderHeading = styled.div`
 `;
 
 export const StyledLadder = styled.div`
-  display: ${({ hidden }) => (hidden ? 'none' : 'fles')};
+  display: ${({ hidden }) => (hidden ? 'none' : 'flex')};
   justify-content: space-around;
   align-items: center;
   flex-direction: row;
-  height: 30px;
+  height: ${({ hidden }) => (hidden ? '0px' : '30px')};
   width: 100%;
   position: relative;
 
@@ -268,7 +275,16 @@ export const Collapse = styled.div`
   background: #0e879c;
   display: flex;
   justify-content: flex-start;
-  z-index: 10;
+  z-index: 5;
+
+  .new-data {
+    position: absolute;
+    font-size: 14px;
+    margin: 0px;
+    padding: 0px;
+    left: 20px;
+    top: -18px;
+  }
 `;
 
 export const WrapperIcon = styled.div`
@@ -282,7 +298,7 @@ export const WrapperIcon = styled.div`
   justify-content: center;
   align-items: center;
   border-radius: 4px;
-
+  overflow: hidden;
   img {
     width: 100%;
     height: 28px;
@@ -308,6 +324,6 @@ export const LadderColumn = styled.div`
 
 export const WrapperLadderGroup = styled.div`
   width: 100%;
-  display: flex;
+  display: ${({ display }) => display || 'flex'};
   flex-direction: column;
 `;
