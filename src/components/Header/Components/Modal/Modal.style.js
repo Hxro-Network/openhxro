@@ -11,6 +11,9 @@ export const ContentModal = styled.div`
   padding: 8px 15px;
   border-radius: 8px;
   outline: none;
+  box-shadow: 2px 6px 20px -2px rgba(255, 255, 255, 0.29);
+  -webkit-box-shadow: 2px 6px 20px -2px rgba(255, 255, 255, 0.29);
+  -moz-box-shadow: 2px 6px 20px -2px rgba(255, 255, 255, 0.29);
 `;
 
 export const Title = styled.p`
