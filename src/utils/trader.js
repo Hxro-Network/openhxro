@@ -30,51 +30,62 @@ class TraderFunction {
   }
 
   async returnData() {
-    const portfolio = this.trader
-      ? this.trader.getPortfolioValue()
-      : this.dexterity.Fractional.Zero();
+    try {
+      const portfolio = this.trader
+        ? this.trader.getPortfolioValue()
+        : this.dexterity.Fractional.Zero();
 
-    const positionVal = this.trader
-      ? this.trader.getPositionValue()
-      : this.dexterity.Fractional.Zero();
+      const positionVal = this.trader
+        ? this.trader.getPositionValue()
+        : this.dexterity.Fractional.Zero();
 
-    const excess = this.trader
-      ? this.trader.getExcessMargin()
-      : this.dexterity.Fractional.Zero();
-    const excessPercent = excess
-      ?.mul(this.dexterity.Fractional.New(100, 0))
-      .div(portfolio);
-    const requiredPercent = this.dexterity.Fractional.New(100, 0).sub(
-      excessPercent
-    );
-    const required = portfolio.sub(excess);
-    const requiredMargin = (requiredPercent.textContent =
-      required.toString(2) + ' (' + requiredPercent?.toString(2) + '%)');
+      const excess = this.trader
+        ? this.trader.getExcessMargin()
+        : this.dexterity.Fractional.Zero();
+      const excessPercent = excess
+        ?.mul(this.dexterity.Fractional.New(100, 0))
+        .div(portfolio);
 
-    const excessMargin =
-      excess?.toString(2) + ' (' + excessPercent?.toString(2) + '%)';
+      const requiredPercent = excessPercent
+        ? this.dexterity.Fractional.New(100, 0).sub(excessPercent)
+        : { textContent: '' };
 
-    const pnlValue = this.trader
-      ? this.trader.getPnL()
-      : this.dexterity.Fractional.Zero();
-    const pnl = pnlValue?.toString(2);
+      const required = portfolio ? portfolio?.sub(excess) : '';
+      const requiredMargin = required
+        ? (requiredPercent.textContent =
+            required.toString(2) + ' (' + requiredPercent?.toString(2) + '%)')
+        : '';
 
-    const withdrawable =
-      this.trader?.getExcessMarginUntilUnhealthy()?.toString(2, true) || 0;
+      const excessMargin = excessPercent
+        ? excess?.toString(2) + ' (' + excessPercent?.toString(2) + '%)'
+        : '';
 
-    const newData = {
-      listAccounts: this.listAccounts,
-      walletPubkeyHref: this.walletPubkeyHref,
-      walletPubkey: this.walletPubkey,
-      portfolio: portfolio?.toString(2),
-      positionVal: positionVal?.toString(2),
-      requiredMargin,
-      excessMargin,
-      pnl,
-      withdrawable,
-      dataOption: this.dataOption,
-    };
-    return newData;
+      const pnlValue =
+        this.trader && portfolio
+          ? this.trader.getPnL()
+          : this.dexterity.Fractional.Zero();
+
+      const pnl = pnlValue?.toString(2);
+
+      const withdrawable =
+        this.trader?.getExcessMarginUntilUnhealthy()?.toString(2, true) || 0;
+
+      const newData = {
+        listAccounts: this.listAccounts,
+        walletPubkeyHref: this.walletPubkeyHref,
+        walletPubkey: this.walletPubkey,
+        portfolio: portfolio?.toString(2),
+        positionVal: positionVal?.toString(2),
+        requiredMargin: requiredMargin,
+        excessMargin: excessMargin,
+        pnl,
+        withdrawable,
+        dataOption: this.dataOption,
+      };
+      return newData;
+    } catch (error) {
+      console.log('----', error);
+    }
   }
 
   async returnDataOrder() {
@@ -82,20 +93,22 @@ class TraderFunction {
       const rows = [];
       const openOrders = await this.trader.getOpenOrders();
 
-      openOrders.forEach((order) => {
-        let side = 'BUY';
-        if (!order.isBid) {
-          side = 'SELL';
-        }
-        rows.push({
-          instrument: order.productName,
-          productIndex: order.productIndex,
-          id: order.id,
-          price: order.price,
-          qty: order.qty,
-          side: side,
+      if (openOrders) {
+        openOrders.forEach((order) => {
+          let side = 'BUY';
+          if (!order.isBid) {
+            side = 'SELL';
+          }
+          rows.push({
+            instrument: order.productName,
+            productIndex: order.productIndex,
+            id: order.id,
+            price: order.price,
+            qty: order.qty,
+            side: side,
+          });
         });
-      });
+      }
 
       return rows;
     }
@@ -120,9 +133,13 @@ class TraderFunction {
     if (this.isConnected) {
       const dataWallet = await this.returnData();
 
-      const dataOrders = await this.returnDataOrder();
+      const dataOrders = this.listAccounts?.length
+        ? await this.returnDataOrder()
+        : [];
 
-      const dataPosition = await this.returnDataPosition();
+      const dataPosition = this.listAccounts?.length
+        ? await this.returnDataPosition()
+        : [];
 
       const dataTrader = await this.trader;
 
@@ -232,7 +249,7 @@ class TraderFunction {
     const trgs = await manifest.getTRGsOfWallet(this.activeMpgPk);
     trgs.sort((a, b) => a.pubkey < b.pubkey);
     if (trgs.length === 0) {
-      console.log(this.trader);
+      this.trader = new this.dexterity.Trader(manifest);
     } else {
       const listAccounts = [];
       for (const { pubkey, trg } of trgs) {
@@ -284,6 +301,7 @@ class TraderFunction {
   async selectTrg(pubkey, callback) {
     const manifest = await this.getManifest();
     this.trader = new this.dexterity.Trader(manifest, pubkey);
+
     await this.trader.connect(async () => {
       if (!this.isConnected) {
         return;
@@ -372,6 +390,7 @@ class TraderFunction {
   }
 
   disConnect() {
+    this.listAccounts = [];
     this.provider.off?.('disconnect');
     this.provider.on('disconnect', (_) => {
       this.isConnected = false;
