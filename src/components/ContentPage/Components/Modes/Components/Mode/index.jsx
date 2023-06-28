@@ -49,7 +49,7 @@ function Mode() {
   }, [productSelect]);
 
   useEffect(() => {
-    setQtyGlobal(qtyGlobal || valueBet?.[0]);
+    setQtyGlobal(valueBet?.[0]);
   }, [productSelect]);
 
   useEffect(() => {

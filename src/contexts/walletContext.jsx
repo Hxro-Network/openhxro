@@ -64,6 +64,7 @@ export const WalletProvider = ({ children }) => {
   const refTimeOutGetLadder = useRef(null);
   const refTimeOutGetLadderNoneWallet = useRef(null);
   const refInterValGetLadderNoneWallet = useRef(null);
+  const refIsDisconnect = useRef(true);
 
   // const refTimeOutGetYourFills = useRef(null);
 
@@ -164,7 +165,9 @@ export const WalletProvider = ({ children }) => {
     ) {
       refRenderLadder.current.getDataLadder((data) => {
         setMarkPriceList(data?.markPriceList || {});
-        setDataLadder(data.ticks);
+        if (data.ticks?.length) {
+          setDataLadder(data.ticks);
+        }
         setMarkPrice(data?.markPrice);
         setFundingRateList(data?.fundingRateList || {});
         setIndexPriceList(data?.indexPriceList || {});
@@ -227,8 +230,8 @@ export const WalletProvider = ({ children }) => {
 
   useEffect(() => {
     if (
-      !isConnect &&
       typeof traderFunction !== 'undefined' &&
+      !traderFunction?.listAccounts?.length &&
       !!productsListKey?.length
     ) {
       window.clearInterval(refInterValGetLadderNoneWallet.current);
@@ -245,7 +248,9 @@ export const WalletProvider = ({ children }) => {
           ) {
             refRenderLadder.current.getDataLadder((data) => {
               setMarkPriceList(data?.markPriceList || {});
-              setDataLadder(data.ticks);
+              if (data.ticks?.length) {
+                setDataLadder(data.ticks);
+              }
               setMarkPrice(data?.markPrice);
               setFundingRateList(data?.fundingRateList || {});
               setIndexPriceList(data?.indexPriceList || {});
@@ -268,12 +273,15 @@ export const WalletProvider = ({ children }) => {
    */
   const connectWallet = (wallet) => {
     refRenderLadder.current = null;
+    refIsDisconnect.current = false;
     window.clearTimeout(refTimeOutGetLadder.current);
     traderFunction.connect(`${wallet}`.toLowerCase(), async (data) => {
       refIsConnect.current = true;
       setLoading(false);
-      if (refIsConnect.current) {
-        window.clearInterval(refInterValGetLadderNoneWallet.current);
+      if (refIsConnect.current && !refIsDisconnect.current) {
+        if (data?.dataWallet?.listAccounts?.length) {
+          window.clearInterval(refInterValGetLadderNoneWallet.current);
+        }
         localStorage.setItem('provider', `${wallet}`.toLowerCase());
         setIsContent(true);
         if (data?.error) {
@@ -295,10 +303,11 @@ export const WalletProvider = ({ children }) => {
           typeof refRenderLadder.current.getDataLadder === 'function'
         ) {
           refRenderLadder.current.getDataLadder((data) => {
-            // console.log('đata', data);
             if (refIsConnect.current) {
               setMarkPriceList(data?.markPriceList);
-              setDataLadder(data.ticks);
+              if (data.ticks?.length) {
+                setDataLadder(data.ticks);
+              }
               setMarkPrice(data?.markPrice);
               setFundingRateList(data?.fundingRateList || {});
               setIndexPriceList(data?.indexPriceList || {});
@@ -315,6 +324,7 @@ export const WalletProvider = ({ children }) => {
    */
   const disableConnectWallet = () => {
     refIsConnect.current = false;
+    refIsDisconnect.current = true;
     refRenderLadder.current = null;
     setIsContent(false);
     localStorage.removeItem('provider');
@@ -322,7 +332,6 @@ export const WalletProvider = ({ children }) => {
     setDataOrders([]);
     setDataPosition([]);
     setDataMarket([]);
-    setDataLadder([]);
     setAccountSelect('');
     setUSDBalance(0);
     setCashBalance(0);
