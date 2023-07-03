@@ -134,7 +134,7 @@ const Ladder = () => {
     refIndexMinAsk.current = 0;
     setTimeout(() => {
       pointEvent.current = true;
-    }, 3500);
+    }, 8000);
     setNewTicks([]);
     changeProduct(`${product.value}`.trim());
     setSelectedProduct(product);
