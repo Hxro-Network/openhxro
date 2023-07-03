@@ -65,6 +65,7 @@ export const WalletProvider = ({ children }) => {
   const refTimeOutGetLadderNoneWallet = useRef(null);
   const refInterValGetLadderNoneWallet = useRef(null);
   const refIsDisconnect = useRef(true);
+  const refChangeProduct = useRef(false);
 
   // const refTimeOutGetYourFills = useRef(null);
 
@@ -159,8 +160,11 @@ export const WalletProvider = ({ children }) => {
       productList,
       connected
     );
+    refChangeProduct.current = false;
+
     if (
       refRenderLadder.current &&
+      !refChangeProduct.current &&
       typeof refRenderLadder.current.getDataLadder === 'function'
     ) {
       refRenderLadder.current.getDataLadder((data) => {
@@ -241,9 +245,11 @@ export const WalletProvider = ({ children }) => {
       refTimeOutGetLadder.current = setTimeout(() => {
         refTimeOutGetLadder.current = undefined;
         handleGetDataLadder(productSelect, productList, refIsConnect.current);
+
         refInterValGetLadderNoneWallet.current = setInterval(() => {
           if (
             refRenderLadder.current &&
+            !refChangeProduct.current &&
             typeof refRenderLadder.current.getDataLadder === 'function'
           ) {
             refRenderLadder.current.getDataLadder((data) => {
@@ -297,9 +303,9 @@ export const WalletProvider = ({ children }) => {
         setProductList(data?.products || []);
         const orderedProductsKeys = Array.from(data?.products?.keys());
         setProductsListKey(orderedProductsKeys || productsListKey);
-
         if (
           refRenderLadder.current &&
+          !refChangeProduct.current &&
           typeof refRenderLadder.current.getDataLadder === 'function'
         ) {
           refRenderLadder.current.getDataLadder((data) => {
@@ -343,11 +349,14 @@ export const WalletProvider = ({ children }) => {
    * @param {*} product
    */
   const changeProduct = (product) => {
-    setProductSelect(product);
-    setDataLadder([]);
-    if (traderFunction && traderFunction.trader) {
-      traderFunction.setActiveProduct(null, `${product}`.trim());
-    }
+    refChangeProduct.current = true;
+    setTimeout(() => {
+      setProductSelect(product);
+      setDataLadder([]);
+      if (traderFunction && traderFunction.trader) {
+        traderFunction.setActiveProduct(null, `${product}`.trim());
+      }
+    }, 500);
   };
 
   const onSelectPrice = (price) => {
