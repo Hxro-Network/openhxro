@@ -118,20 +118,6 @@ function ContentMarket({ dataMarket, accountSelect, productSelect }) {
             </Title>
           );
         })}
-        {/* <Title className="time">Time (UTC)</Title>
-        <Title className="instrument">Instrument</Title>
-        <Title className="position">Qty</Title>
-        <Title className="mark-price">
-          Price
-          <IconSort
-            increases={increases}
-            onClick={() => {
-              setIncreases(!increases);
-              setIdFilter('price');
-            }}
-          />
-        </Title>
-        <Title className="basis">Side</Title> */}
       </WrapperTitle>
 
       <WrapperRowsContent>
