@@ -42,6 +42,7 @@ export const Title = styled.div`
   line-height: 14px;
   color: #ffffff;
   padding: 0px 4px;
+  cursor: default;
 `;
 
 export const WrapperRowsContent = styled.div`

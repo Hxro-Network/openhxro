@@ -1,11 +1,12 @@
-import React, { memo } from 'react';
-import { handleConvertTime } from '../../../../../../utils';
+import React, { memo, useEffect, useState } from 'react';
+import { handleConvertTime, handleSort } from '../../../../../../utils';
 import {
   WrapperTitle,
   Title,
   WrapperRowContent,
   WrapperRowsContent,
 } from './ContentMarket.style';
+import IconSort from '../../../../../IconSort';
 
 export const handleReturnIsBid = (item, account) => {
   if (account) {
@@ -46,37 +47,113 @@ export const handleRenderPrice = (price, product) => {
 };
 
 function ContentMarket({ dataMarket, accountSelect, productSelect }) {
+  const [increases, setIncreases] = useState(true);
+  const [idFilter, setIdFilter] = useState('inserted_at');
+  const [isSortTime, setIsSortTime] = useState(true);
+
+  const [data, setData] = useState([]);
+
+  const DATA_TITLE = [
+    {
+      label: 'Time (UTC)',
+      key: 'inserted_at',
+      class: 'time',
+    },
+    {
+      label: 'Instrument',
+      key: 'product',
+      class: 'instrument',
+    },
+    {
+      label: 'Qty',
+      key: 'base_size',
+      class: 'position',
+    },
+    {
+      label: 'Price',
+      key: 'price',
+      class: 'mark-price',
+    },
+    {
+      label: 'Side',
+      key: '',
+      class: 'basis',
+    },
+  ];
+
+  useEffect(() => {
+    if (dataMarket.length) {
+      const newData = handleSort(dataMarket, idFilter, increases, isSortTime);
+      setData([...newData]);
+    }
+  }, [dataMarket, increases, idFilter, isSortTime]);
+
   return (
     <>
       <WrapperTitle>
-        <Title className="time">Time (UTC)</Title>
+        {DATA_TITLE.map((item, index) => {
+          return (
+            <Title
+              className={item.class}
+              key={index}
+              onClick={() => {
+                setIdFilter(item.key || 'inserted_at');
+                setIncreases(true);
+                if (item.key === '' || item.key === 'inserted_at') {
+                  setIsSortTime(true);
+                } else {
+                  setIsSortTime(false);
+                }
+              }}
+            >
+              {item.label}
+              {item.key === idFilter && (
+                <IconSort
+                  increases={increases}
+                  onClick={() => {
+                    setIncreases(!increases);
+                  }}
+                />
+              )}
+            </Title>
+          );
+        })}
+        {/* <Title className="time">Time (UTC)</Title>
         <Title className="instrument">Instrument</Title>
         <Title className="position">Qty</Title>
-        <Title className="mark-price">Price</Title>
-        <Title className="basis">Side</Title>
+        <Title className="mark-price">
+          Price
+          <IconSort
+            increases={increases}
+            onClick={() => {
+              setIncreases(!increases);
+              setIdFilter('price');
+            }}
+          />
+        </Title>
+        <Title className="basis">Side</Title> */}
       </WrapperTitle>
 
       <WrapperRowsContent>
-        {!!dataMarket?.length &&
-          dataMarket.map((item, index) => {
-            return (
-              <WrapperRowContent
-                color={handleReturnIsBid(item) ? '#47C5D8' : '#E3627D'}
-                index={0}
-                key={item?.maker_order_id + index}
-              >
-                <p className="time">{handleConvertTime(item?.inserted_at)}</p>
-                <p className="instrument">{item?.product}</p>
-                <p className="position">{item?.base_size}</p>
-                <p className="mark-price">
-                  {handleRenderPrice(item?.price, productSelect)}
-                </p>
-                <p className="basis">
-                  {handleReturnIsBid(item, accountSelect) ? 'BUY' : 'SELL'}
-                </p>
-              </WrapperRowContent>
-            );
-          })}
+        {data.map((item, index) => {
+          return (
+            <WrapperRowContent
+              color={handleReturnIsBid(item) ? '#47C5D8' : '#E3627D'}
+              index={0}
+              key={item?.maker_order_id + index}
+            >
+              <p className="time">{handleConvertTime(item?.inserted_at)}</p>
+              <p className="instrument">{item?.product}</p>
+              <p className="position">{item?.base_size}</p>
+              <p className="mark-price">
+                {handleRenderPrice(item?.price, productSelect)}
+              </p>
+              <p className="basis">
+                {handleReturnIsBid(item, accountSelect) ? 'BUY' : 'SELL'}
+              </p>
+            </WrapperRowContent>
+          );
+        })}
       </WrapperRowsContent>
     </>
   );
