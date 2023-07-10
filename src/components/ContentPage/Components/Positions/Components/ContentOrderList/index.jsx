@@ -7,19 +7,51 @@ import {
   Label,
   WrapperTitle,
 } from './ContentOrderList.style';
-import { handleConvertTime } from '../../../../../../utils/index';
+import { handleConvertTime, handleSort } from '../../../../../../utils/index';
 // import { WrapperLoading } from '../../../Market/Market.style';
 // import IconLoading from '@components/IconLoading';
 import { getYourFills } from '../../../../../../axios/getYourFills';
 import { handleReturnIsBid } from '../../../Market/Components/ContentMarket';
 import { handleRenderPrice } from '../../../Market/Components/ContentMarket';
+import IconSort from '../../../../../IconSort';
 
 function ContentOrderList({ productsListKey, isConnect, accountSelect }) {
-  const TITLE_LIST = ['Time (UTC)', 'Instrument', 'Side', 'Qty', 'Price'];
+  const TITLE_LIST = [
+    {
+      label: 'Time (UTC)',
+      key: 'inserted_at',
+      class: 'time',
+    },
+    {
+      label: 'Instrument',
+      key: 'product',
+      class: 'instrument',
+    },
+    {
+      label: 'Side',
+      key: 'side',
+      class: 'side',
+    },
+    {
+      label: 'Qty',
+      key: 'base_size',
+      class: 'qty',
+    },
+
+    {
+      label: 'Price',
+      key: 'price',
+      class: 'price',
+    },
+  ];
   const [dataFills, setDataFills] = useState([]);
   const refTimeOut = useRef(undefined);
   const refConnect = useRef(isConnect);
   const refInterval = useRef();
+
+  const [increases, setIncreases] = useState(true);
+  const [idFilter, setIdFilter] = useState('inserted_at');
+  const [isSortTime, setIsSortTime] = useState(true);
 
   const handleGetDataYourFills = async (products, wallet) => {
     try {
@@ -48,12 +80,20 @@ function ContentOrderList({ productsListKey, isConnect, accountSelect }) {
         }
       }
       if (refConnect.current) {
-        const newDataFills = dataFills.sort((a, b) => {
-          if (new Date(a?.inserted_at) > new Date(b?.inserted_at)) {
-            return -1;
-          }
-          return 1;
+        const newDataFills = dataFills.map((item) => {
+          return {
+            ...item,
+            inserted_at: handleConvertTime(item?.inserted_at),
+            side: handleReturnIsBid(item, accountSelect) ? 'BUY' : 'SELL',
+            price: handleRenderPrice(item?.price, item?.product),
+          };
         });
+        // dataFills.sort((a, b) => {
+        //   if (new Date(a?.inserted_at) > new Date(b?.inserted_at)) {
+        //     return -1;
+        //   }
+        //   return 1;
+        // });
         if (!isError) {
           setDataFills(newDataFills);
         }
@@ -63,6 +103,7 @@ function ContentOrderList({ productsListKey, isConnect, accountSelect }) {
       // setLoading(false);
     }
   };
+
   useEffect(() => {
     if (!isConnect) {
       refConnect.current = false;
@@ -99,16 +140,33 @@ function ContentOrderList({ productsListKey, isConnect, accountSelect }) {
           return (
             <Title
               key={index}
-              className={index === 0 ? 'time' : item.trim().toLowerCase()}
+              className={item.class}
+              onClick={() => {
+                setIdFilter(item.key || 'inserted_at');
+                setIncreases(true);
+                if (item.key === 'inserted_at') {
+                  setIsSortTime(true);
+                } else {
+                  setIsSortTime(false);
+                }
+              }}
             >
-              {item}
+              {item.label}
+              {item.key === idFilter && !!dataFills.length && (
+                <IconSort
+                  increases={increases}
+                  onClick={() => {
+                    setIncreases(!increases);
+                  }}
+                />
+              )}
             </Title>
           );
         })}
       </WrapperTitle>
       <ContentOrders>
-        {!!dataFills.length &&
-          dataFills.map((item, index) => {
+        {handleSort(dataFills, idFilter, increases, isSortTime).map(
+          (item, index) => {
             return (
               <WrapperRowContent
                 color={
@@ -117,18 +175,15 @@ function ContentOrderList({ productsListKey, isConnect, accountSelect }) {
                 key={index}
                 index={2}
               >
-                <p className="time">{handleConvertTime(item?.inserted_at)}</p>
+                <p className="time">{item?.inserted_at}</p>
                 <p className="instrument">{item?.product || ''}</p>
-                <p className="side">
-                  {handleReturnIsBid(item, accountSelect) ? 'BUY' : 'SELL'}
-                </p>
+                <p className="side">{item?.side}</p>
                 <p className="qty">{item?.base_size}</p>
-                <p className="price">
-                  {handleRenderPrice(item?.price, item?.product)}
-                </p>
+                <p className="price">{item?.price}</p>
               </WrapperRowContent>
             );
-          })}
+          }
+        )}
       </ContentOrders>
 
       {/* {loading && (
