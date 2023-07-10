@@ -1,4 +1,4 @@
-import React, { memo } from 'react';
+import React, { memo, useEffect, useState } from 'react';
 import { toast } from 'react-toastify';
 import { traderFunction } from '@contexts/walletContext';
 import { toastUICancelOrder } from '@utils/notify';
@@ -14,9 +14,57 @@ import {
   WrapperLabel,
 } from './ContentOrder.style';
 import IconCopy from '../../../../../IconCopy';
+import IconSort from '../../../../../IconSort';
+import { handleSort } from '../../../../../../utils';
 
 function ContentOrder({ dataOrders, productsListKey }) {
-  const TITLE_LIST = ['Instrument', 'Side', 'Qty', 'Price', 'ID', 'button'];
+  const TITLE_LIST = [
+    {
+      label: 'Instrument',
+      key: 'instrument',
+    },
+    {
+      label: 'Side',
+      key: 'side',
+    },
+    {
+      label: 'Qty',
+      key: 'qty',
+    },
+    {
+      label: 'Price',
+      key: 'price',
+    },
+    {
+      label: 'ID',
+      key: 'id',
+    },
+    {
+      label: 'button',
+      key: '',
+    },
+  ];
+
+  const [listOrder, setListOrder] = useState([]);
+  const [increases, setIncreases] = useState(true);
+  const [idFilter, setIdFilter] = useState('instrument');
+
+  useEffect(() => {
+    if (!dataOrders.length) {
+      setListOrder([]);
+      return;
+    }
+    const newDataOrders = dataOrders.map((item) => {
+      return {
+        ...item,
+        price: handleReturnPrice(
+          item?.price?.toString(),
+          item?.instrument?.toString()
+        ),
+      };
+    });
+    setListOrder(newDataOrders);
+  }, [dataOrders]);
 
   const handleClickCancel = (product, id) => {
     const idToast = toast.loading(toastUICancelOrder.loading, {
@@ -82,53 +130,61 @@ function ContentOrder({ dataOrders, productsListKey }) {
           return (
             <Title
               key={index}
-              className={item.trim().toLowerCase().replace(/\s+/g, '-')}
+              className={item.label.toLowerCase().replace(/\s+/g, '-')}
+              onClick={() => {
+                setIncreases(true);
+                if (!item.key) {
+                  setIdFilter('instrument');
+                } else {
+                  setIdFilter(item.key);
+                }
+              }}
             >
-              {item}
+              {item.label}
+              {item.key === idFilter && !!listOrder.length && (
+                <IconSort
+                  increases={increases}
+                  onClick={() => {
+                    setIncreases(!increases);
+                  }}
+                />
+              )}
             </Title>
           );
         })}
       </WrapperTitle>
       <ContentOrders>
-        {!!dataOrders?.length &&
-          dataOrders.map((item) => {
-            const len = `${item?.id}`.length;
-            return (
-              <WrapperRowContent
-                color={
-                  `${item?.side}`.toLowerCase() === 'sell'
-                    ? '#E3627D'
-                    : '#47C5D8'
-                }
-                key={item?.id}
-                index={0}
-              >
-                <p className="instrument">{item?.instrument?.toString()}</p>
-                <p className="side">{item?.side?.toString()}</p>
-                <p className="qty">{item?.qty?.toString()}</p>
-                <p className="price">
-                  {handleReturnPrice(
-                    item?.price?.toString(),
-                    item?.instrument?.toString()
-                  )}
-                </p>
-                <div className="id">
-                  {`${item?.id}`.substring(len - 4, len)}
-                  <IconCopy className="icon-copy" value={`${item?.id}`} />
-                </div>
-                <WrapperButton className="button">
-                  <Button
-                    className="style-button button-cancel"
-                    onClick={() =>
-                      handleClickCancel(item?.instrument?.toString(), item?.id)
-                    }
-                  >
-                    Cancel
-                  </Button>
-                </WrapperButton>
-              </WrapperRowContent>
-            );
-          })}
+        {handleSort(listOrder, idFilter, increases).map((item) => {
+          const len = `${item?.id}`.length;
+          return (
+            <WrapperRowContent
+              color={
+                `${item?.side}`.toLowerCase() === 'sell' ? '#E3627D' : '#47C5D8'
+              }
+              key={item?.id}
+              index={0}
+            >
+              <p className="instrument">{item?.instrument?.toString()}</p>
+              <p className="side">{item?.side?.toString()}</p>
+              <p className="qty">{item?.qty?.toString()}</p>
+              <p className="price">{item?.price}</p>
+              <div className="id">
+                {`${item?.id}`.substring(len - 4, len)}
+                <IconCopy className="icon-copy" value={`${item?.id}`} />
+              </div>
+              <WrapperButton className="button">
+                <Button
+                  className="style-button button-cancel"
+                  onClick={() =>
+                    handleClickCancel(item?.instrument?.toString(), item?.id)
+                  }
+                >
+                  Cancel
+                </Button>
+              </WrapperButton>
+            </WrapperRowContent>
+          );
+        })}
       </ContentOrders>
     </WrapperOrdersContent>
   );

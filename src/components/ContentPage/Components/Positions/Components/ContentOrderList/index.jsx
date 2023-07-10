@@ -142,6 +142,7 @@ function ContentOrderList({ productsListKey, isConnect, accountSelect }) {
               key={index}
               className={item.class}
               onClick={() => {
+                if (!dataFills.length) return;
                 setIdFilter(item.key || 'inserted_at');
                 setIncreases(true);
                 if (item.key === 'inserted_at') {
