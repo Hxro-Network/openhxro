@@ -36,6 +36,7 @@ class Ladder {
         // }
         let ticks = [];
         const MAX_NUM_LEVELS = 500;
+        const RADIUS = 100; //22
         let openOrderIds = new Set();
         let maxSize = this.traderFunction.dexterity.Fractional.New(1, 0);
         let lastPrice = this.traderFunction.dexterity.Fractional.Zero();
@@ -52,21 +53,26 @@ class Ladder {
           );
 
           const maxLevelsRadius = tickSize?.mul(
-            this.traderFunction.dexterity.Fractional.New(22, 0)
+            this.traderFunction.dexterity.Fractional.New(RADIUS, 0)
           );
-
+          // console.log('maxLevelsRadius', maxLevelsRadius.toString());
           let tickPrice = this.feed.bestask?.add(maxLevelsRadius);
+          // console.log('tickPrice', `${tickPrice}`);
+
           tickPrice = tickPrice?.isNan()
             ? this.feed.bestbid?.add(maxLevelsRadius)
             : tickPrice;
 
           let endPrice = this.feed.bestbid?.sub(maxLevelsRadius);
+          // console.log('endPrice', `${endPrice}`);
           endPrice = endPrice?.isNan()
             ? this.feed.bestask?.add(maxLevelsRadius)
             : endPrice;
           if (endPrice.isNan()) {
             endPrice = this.traderFunction.dexterity.Fractional.Zero();
           }
+
+          // console.log('this.feed.ticks', this.feed.ticks);
 
           for (const t of this.feed.ticks) {
             if (t.price?.gt(tickPrice) || t.price?.lt(endPrice)) {
