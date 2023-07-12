@@ -98,7 +98,7 @@ function ContentMarket({ dataMarket, accountSelect, productSelect }) {
               key={index}
               onClick={() => {
                 setIdFilter(item.key || 'inserted_at');
-                setIncreases(true);
+                setIncreases(!increases);
                 if (item.key === '' || item.key === 'inserted_at') {
                   setIsSortTime(true);
                 } else {

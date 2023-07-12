@@ -1,4 +1,4 @@
-import React, { memo, useEffect, useState } from 'react';
+import React, { memo, useEffect, useRef, useState } from 'react';
 import { toast } from 'react-toastify';
 import { traderFunction } from '@contexts/walletContext';
 import { toastUICancelOrder } from '@utils/notify';
@@ -48,8 +48,12 @@ function ContentOrder({ dataOrders, productsListKey }) {
   const [listOrder, setListOrder] = useState([]);
   const [increases, setIncreases] = useState(true);
   const [idFilter, setIdFilter] = useState('instrument');
+  const [isMouseEnter, setIsMouseEnter] = useState(false);
 
   useEffect(() => {
+    if (isMouseEnter) {
+      return;
+    }
     if (!dataOrders.length) {
       setListOrder([]);
       return;
@@ -64,7 +68,7 @@ function ContentOrder({ dataOrders, productsListKey }) {
       };
     });
     setListOrder(newDataOrders);
-  }, [dataOrders]);
+  }, [dataOrders, isMouseEnter]);
 
   const handleClickCancel = (product, id) => {
     const idToast = toast.loading(toastUICancelOrder.loading, {
@@ -116,7 +120,13 @@ function ContentOrder({ dataOrders, productsListKey }) {
   };
 
   return (
-    <WrapperOrdersContent>
+    <WrapperOrdersContent
+      onMouseEnter={() => {
+        listOrder?.length && setIsMouseEnter(true);
+      }}
+      onMouseLeave={() => setIsMouseEnter(false)}
+      hover={isMouseEnter}
+    >
       <WrapperLabel>
         <Label>Orders</Label>
         {!!dataOrders?.length && (
@@ -132,7 +142,7 @@ function ContentOrder({ dataOrders, productsListKey }) {
               key={index}
               className={item.label.toLowerCase().replace(/\s+/g, '-')}
               onClick={() => {
-                setIncreases(true);
+                setIncreases(!increases);
                 if (!item.key) {
                   setIdFilter('instrument');
                 } else {

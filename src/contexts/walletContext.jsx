@@ -310,7 +310,6 @@ export const WalletProvider = ({ children }) => {
         ) {
           refRenderLadder.current.getDataLadder((data) => {
             if (refIsConnect.current) {
-              console.log('data', data.ticks?.length);
               setMarkPriceList(data?.markPriceList);
               if (data.ticks?.length) {
                 setDataLadder(data.ticks);

@@ -173,7 +173,7 @@ function ContentPosition({
               key={index}
               onClick={() => {
                 setIdFilter(item.key || 'instrument');
-                setIncreases(true);
+                setIncreases(!increases);
               }}
             >
               <div dangerouslySetInnerHTML={{ __html: item.label }} />

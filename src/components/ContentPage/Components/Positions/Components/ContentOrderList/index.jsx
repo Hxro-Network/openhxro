@@ -144,7 +144,7 @@ function ContentOrderList({ productsListKey, isConnect, accountSelect }) {
               onClick={() => {
                 if (!dataFills.length) return;
                 setIdFilter(item.key || 'inserted_at');
-                setIncreases(true);
+                setIncreases(!increases);
                 if (item.key === 'inserted_at') {
                   setIsSortTime(true);
                 } else {
