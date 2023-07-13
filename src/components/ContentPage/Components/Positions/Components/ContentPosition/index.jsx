@@ -52,6 +52,7 @@ function ContentPosition({
 
   const [increases, setIncreases] = useState(true);
   const [idFilter, setIdFilter] = useState('instrument');
+  const [isSortNumber, setIsSortNumber] = useState(false);
 
   useEffect(() => {
     if (
@@ -174,6 +175,11 @@ function ContentPosition({
               onClick={() => {
                 setIdFilter(item.key || 'instrument');
                 setIncreases(!increases);
+                if (item.key === 'markPrice') {
+                  setIsSortNumber(true);
+                } else {
+                  setIsSortNumber(false);
+                }
               }}
             >
               <div dangerouslySetInnerHTML={{ __html: item.label }} />
@@ -190,28 +196,30 @@ function ContentPosition({
         })}
       </WrapperTitle>
       <WrapperContentRows>
-        {handleSort(data, idFilter, increases).map((position, index) => {
-          return (
-            <WrapperRowContent
-              key={index}
-              index={0}
-              color={
-                `${position?.position}`.includes('-') ? '#E3627D' : '#47C5D8'
-              }
-            >
-              <p className="instrument">{position?.instrument || ''} </p>
-              <p className="position">{position?.position || ''}</p>
-              <p className="mark-price">{position?.markPrice || ''}</p>
-              <p className="funding">
-                {/* {`${position?.instrument}`.trim() === 'BTCUSD-PERP'
+        {handleSort(data, idFilter, increases, false, isSortNumber).map(
+          (position, index) => {
+            return (
+              <WrapperRowContent
+                key={index}
+                index={0}
+                color={
+                  `${position?.position}`.includes('-') ? '#E3627D' : '#47C5D8'
+                }
+              >
+                <p className="instrument">{position?.instrument || ''} </p>
+                <p className="position">{position?.position || ''}</p>
+                <p className="mark-price">{position?.markPrice || ''}</p>
+                <p className="funding">
+                  {/* {`${position?.instrument}`.trim() === 'BTCUSD-PERP'
                     ? funding
                     : '-'} */}
-                {position?.funding || ''}
-              </p>
-              <p className="basis">{position.basis || ''}</p>
-            </WrapperRowContent>
-          );
-        })}
+                  {position?.funding || ''}
+                </p>
+                <p className="basis">{position.basis || ''}</p>
+              </WrapperRowContent>
+            );
+          }
+        )}
         {!Object.keys(markPriceList)?.length && (
           <WrapperLoading>
             <IconLoading isWhite />

@@ -14,7 +14,7 @@ export const shortPkStr = (pk) => {
   return pk.slice(0, 4) + '...' + pk.slice(-4);
 };
 
-export const handleSort = (data, id, type, isSortTime) => {
+export const handleSort = (data, id, type, isSortTime, isSortNumber) => {
   if (`${type}` === 'true') {
     return data.sort((a, b) => {
       let itemA = a[id];
@@ -22,6 +22,11 @@ export const handleSort = (data, id, type, isSortTime) => {
       if (isSortTime) {
         itemA = new Date(a[id]).getTime();
         itemB = new Date(b[id]).getTime();
+      }
+
+      if (isSortNumber) {
+        itemA = `${a[id]}`.replace(',', '') * 1;
+        itemB = `${b[id]}`.replace(',', '') * 1;
       }
 
       if (itemA > itemB) {
@@ -41,7 +46,10 @@ export const handleSort = (data, id, type, isSortTime) => {
         itemA = new Date(a[id]).getTime();
         itemB = new Date(b[id]).getTime();
       }
-
+      if (isSortNumber) {
+        itemA = `${a[id]}`.replace(',', '') * 1;
+        itemB = `${b[id]}`.replace(',', '') * 1;
+      }
       if (itemA > itemB) {
         return 1;
       }

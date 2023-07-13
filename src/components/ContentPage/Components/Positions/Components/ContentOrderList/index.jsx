@@ -52,6 +52,7 @@ function ContentOrderList({ productsListKey, isConnect, accountSelect }) {
   const [increases, setIncreases] = useState(true);
   const [idFilter, setIdFilter] = useState('inserted_at');
   const [isSortTime, setIsSortTime] = useState(true);
+  const [isSortNumber, setIsSortNumber] = useState(false);
 
   const handleGetDataYourFills = async (products, wallet) => {
     try {
@@ -150,6 +151,11 @@ function ContentOrderList({ productsListKey, isConnect, accountSelect }) {
                 } else {
                   setIsSortTime(false);
                 }
+                if (item.key === 'price') {
+                  setIsSortNumber(true);
+                } else {
+                  setIsSortNumber(false);
+                }
               }}
             >
               {item.label}
@@ -166,25 +172,29 @@ function ContentOrderList({ productsListKey, isConnect, accountSelect }) {
         })}
       </WrapperTitle>
       <ContentOrders>
-        {handleSort(dataFills, idFilter, increases, isSortTime).map(
-          (item, index) => {
-            return (
-              <WrapperRowContent
-                color={
-                  handleReturnIsBid(item, accountSelect) ? '#47C5D8' : '#E3627D'
-                }
-                key={index}
-                index={2}
-              >
-                <p className="time">{item?.inserted_at}</p>
-                <p className="instrument">{item?.product || ''}</p>
-                <p className="side">{item?.side}</p>
-                <p className="qty">{item?.base_size}</p>
-                <p className="price">{item?.price}</p>
-              </WrapperRowContent>
-            );
-          }
-        )}
+        {handleSort(
+          dataFills,
+          idFilter,
+          increases,
+          isSortTime,
+          isSortNumber
+        ).map((item, index) => {
+          return (
+            <WrapperRowContent
+              color={
+                handleReturnIsBid(item, accountSelect) ? '#47C5D8' : '#E3627D'
+              }
+              key={index}
+              index={2}
+            >
+              <p className="time">{item?.inserted_at}</p>
+              <p className="instrument">{item?.product || ''}</p>
+              <p className="side">{item?.side}</p>
+              <p className="qty">{item?.base_size}</p>
+              <p className="price">{item?.price}</p>
+            </WrapperRowContent>
+          );
+        })}
       </ContentOrders>
 
       {/* {loading && (

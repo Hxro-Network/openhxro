@@ -50,8 +50,7 @@ function ContentMarket({ dataMarket, accountSelect, productSelect }) {
   const [increases, setIncreases] = useState(true);
   const [idFilter, setIdFilter] = useState('inserted_at');
   const [isSortTime, setIsSortTime] = useState(true);
-
-  const [data, setData] = useState([]);
+  const [isSortNumber, setIsSortNumber] = useState(false);
 
   const DATA_TITLE = [
     {
@@ -81,13 +80,6 @@ function ContentMarket({ dataMarket, accountSelect, productSelect }) {
     },
   ];
 
-  useEffect(() => {
-    if (dataMarket.length) {
-      const newData = handleSort(dataMarket, idFilter, increases, isSortTime);
-      setData([...newData]);
-    }
-  }, [dataMarket, increases, idFilter, isSortTime]);
-
   return (
     <>
       <WrapperTitle>
@@ -103,6 +95,11 @@ function ContentMarket({ dataMarket, accountSelect, productSelect }) {
                   setIsSortTime(true);
                 } else {
                   setIsSortTime(false);
+                }
+                if (item.key === 'qty' || item.key === 'mark-price') {
+                  setIsSortNumber(true);
+                } else {
+                  setIsSortNumber(false);
                 }
               }}
             >
@@ -121,7 +118,13 @@ function ContentMarket({ dataMarket, accountSelect, productSelect }) {
       </WrapperTitle>
 
       <WrapperRowsContent>
-        {data.map((item, index) => {
+        {handleSort(
+          dataMarket,
+          idFilter,
+          increases,
+          isSortTime,
+          isSortNumber
+        ).map((item, index) => {
           return (
             <WrapperRowContent
               color={handleReturnIsBid(item) ? '#47C5D8' : '#E3627D'}

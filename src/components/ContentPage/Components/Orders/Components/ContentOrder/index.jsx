@@ -49,6 +49,7 @@ function ContentOrder({ dataOrders, productsListKey }) {
   const [increases, setIncreases] = useState(true);
   const [idFilter, setIdFilter] = useState('instrument');
   const [isMouseEnter, setIsMouseEnter] = useState(false);
+  const [isSortNumber, setIsSortNumber] = useState(false);
 
   useEffect(() => {
     if (isMouseEnter) {
@@ -148,6 +149,11 @@ function ContentOrder({ dataOrders, productsListKey }) {
                 } else {
                   setIdFilter(item.key);
                 }
+                if (item.key === 'price') {
+                  setIsSortNumber(true);
+                } else {
+                  setIsSortNumber(false);
+                }
               }}
             >
               {item.label}
@@ -164,37 +170,41 @@ function ContentOrder({ dataOrders, productsListKey }) {
         })}
       </WrapperTitle>
       <ContentOrders>
-        {handleSort(listOrder, idFilter, increases).map((item) => {
-          const len = `${item?.id}`.length;
-          return (
-            <WrapperRowContent
-              color={
-                `${item?.side}`.toLowerCase() === 'sell' ? '#E3627D' : '#47C5D8'
-              }
-              key={item?.id}
-              index={0}
-            >
-              <p className="instrument">{item?.instrument?.toString()}</p>
-              <p className="side">{item?.side?.toString()}</p>
-              <p className="qty">{item?.qty?.toString()}</p>
-              <p className="price">{item?.price}</p>
-              <div className="id">
-                {`${item?.id}`.substring(len - 4, len)}
-                <IconCopy className="icon-copy" value={`${item?.id}`} />
-              </div>
-              <WrapperButton className="button">
-                <Button
-                  className="style-button button-cancel"
-                  onClick={() =>
-                    handleClickCancel(item?.instrument?.toString(), item?.id)
-                  }
-                >
-                  Cancel
-                </Button>
-              </WrapperButton>
-            </WrapperRowContent>
-          );
-        })}
+        {handleSort(listOrder, idFilter, increases, false, isSortNumber).map(
+          (item) => {
+            const len = `${item?.id}`.length;
+            return (
+              <WrapperRowContent
+                color={
+                  `${item?.side}`.toLowerCase() === 'sell'
+                    ? '#E3627D'
+                    : '#47C5D8'
+                }
+                key={item?.id}
+                index={0}
+              >
+                <p className="instrument">{item?.instrument?.toString()}</p>
+                <p className="side">{item?.side?.toString()}</p>
+                <p className="qty">{item?.qty?.toString()}</p>
+                <p className="price">{item?.price}</p>
+                <div className="id">
+                  {`${item?.id}`.substring(len - 4, len)}
+                  <IconCopy className="icon-copy" value={`${item?.id}`} />
+                </div>
+                <WrapperButton className="button">
+                  <Button
+                    className="style-button button-cancel"
+                    onClick={() =>
+                      handleClickCancel(item?.instrument?.toString(), item?.id)
+                    }
+                  >
+                    Cancel
+                  </Button>
+                </WrapperButton>
+              </WrapperRowContent>
+            );
+          }
+        )}
       </ContentOrders>
     </WrapperOrdersContent>
   );
