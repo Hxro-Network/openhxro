@@ -47,6 +47,7 @@ export const WrapperTitle = styled.div`
 
 export const Title = styled.div`
   display: flex;
+  align-items: center;
   font-family: 'Roboto';
   font-style: normal;
   font-weight: 700;
@@ -54,6 +55,7 @@ export const Title = styled.div`
   line-height: 14px;
   color: #ffffff;
   padding: 0px 4px;
+  cursor: pointer;
 `;
 
 export const WrapperContentRows = styled.div`

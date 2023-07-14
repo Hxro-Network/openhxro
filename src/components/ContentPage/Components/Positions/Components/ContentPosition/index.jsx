@@ -8,6 +8,8 @@ import {
   WrapperLoading,
 } from './ContentPosition.style';
 import IconLoading from '@components/IconLoading';
+import IconSort from '../../../../../IconSort';
+import { handleSort } from '../../../../../../utils';
 
 function ContentPosition({
   dataPosition,
@@ -15,12 +17,42 @@ function ContentPosition({
   fundingRateList,
   markPriceList,
   indexPriceList,
-  isConnect,
 }) {
+  const DATA_TITLE = [
+    {
+      label: 'Instrument',
+      key: 'instrument',
+      class: 'instrument',
+    },
+    {
+      label: 'Position',
+      key: 'position',
+      class: 'position',
+    },
+    {
+      label: 'Mark Price',
+      key: 'markPrice',
+      class: 'position',
+    },
+    {
+      label: `1 hour <br /> Funding Rate`,
+      key: 'funding',
+      class: 'funding',
+    },
+    {
+      label: 'Annualized Basis',
+      key: '',
+      class: 'basis',
+    },
+  ];
   const [data, setData] = useState([]);
   const [positionList, setPositionList] = useState([]);
   const [markList, setMarkList] = useState({});
   const [indexList, setIndexList] = useState({});
+
+  const [increases, setIncreases] = useState(true);
+  const [idFilter, setIdFilter] = useState('instrument');
+  const [isSortNumber, setIsSortNumber] = useState(false);
 
   useEffect(() => {
     if (
@@ -43,20 +75,38 @@ function ContentPosition({
   }, [JSON.stringify(productsListKey)]);
 
   useEffect(() => {
+    if (!Object.keys(markPriceList)?.length) return;
     const newProduct = [];
     newProductListKey.map((product) => {
       const position = positionList?.find(
         (item) => `${item?.instrument}`.trim() === `${product}`.trim()
       );
       if (position) {
-        newProduct.push(position);
+        newProduct.push({
+          ...position,
+          markPrice: renderMarkPrice(
+            markList[`${position?.instrument}`.trim()],
+            `${position?.instrument}`.trim()
+          ),
+          funding: handleReturnFundingRate(`${position?.instrument}`.trim()),
+          basis: handleReturnAnnualizedBasis(`${position?.instrument}`.trim()),
+        });
       } else {
-        newProduct.push({ position: '0', instrument: product });
+        newProduct.push({
+          position: '0',
+          instrument: product,
+          markPrice: renderMarkPrice(
+            markList[`${product}`.trim()],
+            `${product}`.trim()
+          ),
+          funding: handleReturnFundingRate(`${product}`.trim()),
+          basis: handleReturnAnnualizedBasis(`${product}`.trim()),
+        });
       }
     });
 
     setData(newProduct);
-  }, [positionList, newProductListKey, isConnect]);
+  }, [positionList, newProductListKey, markList]);
 
   const renderMarkPrice = (markPrice, product) => {
     if (!markPrice) {
@@ -117,19 +167,37 @@ function ContentPosition({
   return (
     <>
       <WrapperTitle>
-        <Title className="instrument">Instrument</Title>
-        <Title className="position">Position</Title>
-        <Title className="mark-price">Mark Price</Title>
-        <Title className="funding">
-          1 hour
-          <br /> Funding Rate
-        </Title>
-        <Title className="basis">Annualized Basis</Title>
+        {DATA_TITLE.map((item, index) => {
+          return (
+            <Title
+              className={item.class}
+              key={index}
+              onClick={() => {
+                setIdFilter(item.key || 'instrument');
+                setIncreases(!increases);
+                if (item.key === 'markPrice') {
+                  setIsSortNumber(true);
+                } else {
+                  setIsSortNumber(false);
+                }
+              }}
+            >
+              <div dangerouslySetInnerHTML={{ __html: item.label }} />
+              {item.key === idFilter && !!data?.length && (
+                <IconSort
+                  increases={increases}
+                  onClick={() => {
+                    setIncreases(!increases);
+                  }}
+                />
+              )}
+            </Title>
+          );
+        })}
       </WrapperTitle>
       <WrapperContentRows>
-        {!!Object.keys(markPriceList)?.length &&
-          !!data?.length &&
-          data.map((position, index) => {
+        {handleSort(data, idFilter, increases, false, isSortNumber).map(
+          (position, index) => {
             return (
               <WrapperRowContent
                 key={index}
@@ -140,26 +208,18 @@ function ContentPosition({
               >
                 <p className="instrument">{position?.instrument || ''} </p>
                 <p className="position">{position?.position || ''}</p>
-                <p className="mark-price">
-                  {renderMarkPrice(
-                    markList[`${position?.instrument}`.trim()],
-                    `${position?.instrument}`.trim()
-                  )}
-                </p>
+                <p className="mark-price">{position?.markPrice || ''}</p>
                 <p className="funding">
                   {/* {`${position?.instrument}`.trim() === 'BTCUSD-PERP'
                     ? funding
                     : '-'} */}
-                  {handleReturnFundingRate(`${position?.instrument}`.trim())}
+                  {position?.funding || ''}
                 </p>
-                <p className="basis">
-                  {handleReturnAnnualizedBasis(
-                    `${position?.instrument}`.trim()
-                  )}
-                </p>
+                <p className="basis">{position.basis || ''}</p>
               </WrapperRowContent>
             );
-          })}
+          }
+        )}
         {!Object.keys(markPriceList)?.length && (
           <WrapperLoading>
             <IconLoading isWhite />

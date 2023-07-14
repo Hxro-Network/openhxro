@@ -36,6 +36,7 @@ export const Title = styled.div`
   line-height: 14px;
   color: #ffffff;
   padding: 0px 8px;
+  cursor: pointer;
 `;
 
 export const WrapperOrdersContent = styled.div`
@@ -46,6 +47,13 @@ export const WrapperOrdersContent = styled.div`
   border-top: none;
   overflow: hidden;
   box-sizing: border-box;
+
+  box-shadow: ${({ hover }) =>
+    hover ? '1px 1px 16px 1px rgba(71,197,216,0.8) inset' : 'none'};
+  -webkit-box-shadow: ${({ hover }) =>
+    hover ? '1px 1px 16px 1px rgba(71,197,216,0.8) inset' : 'none'};
+  -moz-box-shadow: ${({ hover }) =>
+    hover ? '1px 1px 16px 1px rgba(71,197,216,0.8) inset' : 'none'};
 `;
 
 export const WrapperTitle = styled.div`
@@ -58,18 +66,18 @@ export const WrapperTitle = styled.div`
   border-right: none;
 
   .instrument {
-    width: 35%;
-    max-width: 125px;
+    width: 30%;
+    max-width: 120px;
   }
 
   .side {
-    width: 10%;
+    width: 15%;
     min-width: 50px;
   }
   .qty,
   .price {
     width: 15%;
-    min-width: 60px;
+    min-width: 55px;
   }
 
   .id {
@@ -119,23 +127,23 @@ export const WrapperRowContent = styled.div`
   }
 
   .instrument {
-    width: 35%;
-    max-width: 125px;
+    width: 30%;
+    max-width: 120px;
   }
 
   .side {
-    width: 10%;
+    width: 15%;
     min-width: 50px;
   }
   .qty,
   .price {
     width: 15%;
-    min-width: 60px;
+    min-width: 55px;
   }
 
   .id {
     width: 13%;
-    min-width: 40px;
+    min-width: 30px;
     display: flex;
     align-items: center;
     .icon-copy {
