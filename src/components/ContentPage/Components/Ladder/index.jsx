@@ -240,6 +240,7 @@ const Ladder = () => {
         refFocus.current &&
         refContentLadder.current
       ) {
+        firstLoad.current = 2;
         refFocus.current = false;
         const wrapperLadderContent = refWrapperLadderContent.current;
         const ladderContent = refContentLadder.current;
@@ -493,11 +494,13 @@ const Ladder = () => {
   }, [productSelect]);
 
   useEffect(() => {
-    if (firstLoad.current < 2 && !!newTicks?.length) {
-      if (firstLoad.current > 0) {
+    if (firstLoad.current === 0 && newTicks.length) {
+      firstLoad.current = 1;
+    }
+    if (firstLoad.current === 1) {
+      setTimeout(() => {
         handleFocus();
-      }
-      firstLoad.current = firstLoad.current + 1;
+      }, 1000);
     }
   }, [JSON.stringify(newTicks)]);
 
