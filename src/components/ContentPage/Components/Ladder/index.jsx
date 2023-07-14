@@ -500,7 +500,7 @@ const Ladder = () => {
     if (firstLoad.current === 1) {
       setTimeout(() => {
         handleFocus();
-      }, 1000);
+      }, 2500);
     }
   }, [JSON.stringify(newTicks)]);
 
