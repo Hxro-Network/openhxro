@@ -29,6 +29,7 @@ function Mode() {
   } = useWallet();
   const PADDING = 1000000;
   const [orderType, setOrderType] = useState('Limit');
+  const [isClear, setIsClear] = useState(false);
 
   const OPTION_ORDER_TYPE = ['Limit', 'ImmediateOrCancel'];
 
@@ -57,6 +58,11 @@ function Mode() {
   }, [priceSelect]);
 
   const handleClickItem = (value) => {
+    if (isClear) {
+      setQtyGlobal(value);
+      setIsClear(false);
+      return;
+    }
     const newValue =
       Math.round(qtyGlobal * PADDING) + Math.round(value * PADDING);
     setQtyGlobal(`${newValue / PADDING}`);
@@ -203,6 +209,7 @@ function Mode() {
         onClick={() => {
           setQtyGlobal(valueBet?.[0]);
           setPrice('');
+          setIsClear(true);
         }}
       >
         Clear

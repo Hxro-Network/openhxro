@@ -31,6 +31,7 @@ function Sweep() {
 
   const [toler, setToler] = useState('0.1');
   const [price, SetPrice] = useState('-');
+  const [isClear, setIsClear] = useState(false);
 
   const handleReturnProduct = (product) => {
     if (`${product}`.toLowerCase().includes('eth')) {
@@ -51,6 +52,11 @@ function Sweep() {
   }, [productSelect]);
 
   const handleClickItem = (value) => {
+    if (isClear) {
+      setQtyGlobal(value);
+      setIsClear(false);
+      return;
+    }
     const newValue =
       Math.round(qtyGlobal * PADDING) + Math.round(value * PADDING);
     setQtyGlobal(`${newValue / PADDING}`);
@@ -166,6 +172,7 @@ function Sweep() {
       <ButtonClear
         onClick={() => {
           setQtyGlobal(valueBet?.[0]);
+          setIsClear(true);
         }}
       >
         Clear
