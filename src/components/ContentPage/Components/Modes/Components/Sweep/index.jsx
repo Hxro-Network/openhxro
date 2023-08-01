@@ -69,7 +69,7 @@ function Sweep() {
       if (traderFunction && traderFunction.trader && markPrice !== '-') {
         let newPrice = (price * toler) / 100 + price;
         const newOrderSend = {
-          price: `${(newPrice * 1).toFixed(0)}`,
+          price: `${(newPrice * 1).toFixed(3)}`,
           quantity: qtyGlobal,
           productIndex: productIndex,
           isIOC: true,
@@ -103,7 +103,7 @@ function Sweep() {
       if (traderFunction && traderFunction.trader && markPrice !== '-') {
         let newPrice = price - (price * toler) / 100;
         const newOrderSend = {
-          price: `${(newPrice * 1).toFixed(0)}`,
+          price: `${(newPrice * 1).toFixed(3)}`,
           quantity: qtyGlobal,
           productIndex: productIndex,
           isIOC: true,
