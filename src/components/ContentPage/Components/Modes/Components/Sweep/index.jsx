@@ -69,7 +69,11 @@ function Sweep() {
       if (traderFunction && traderFunction.trader && markPrice !== '-') {
         let newPrice = (price * toler) / 100 + price;
         const newOrderSend = {
-          price: `${(newPrice * 1).toFixed(3)}`,
+          price: `${productSelect}`.toLowerCase().includes('sol')
+            ? `${(newPrice * 1).toFixed(3)}`
+            : `${productSelect}`.toLowerCase().includes('eth')
+            ? `${(newPrice * 1).toFixed(1)}`
+            : `${(newPrice * 1).toFixed(0)}`,
           quantity: qtyGlobal,
           productIndex: productIndex,
           isIOC: true,
@@ -103,7 +107,11 @@ function Sweep() {
       if (traderFunction && traderFunction.trader && markPrice !== '-') {
         let newPrice = price - (price * toler) / 100;
         const newOrderSend = {
-          price: `${(newPrice * 1).toFixed(3)}`,
+          price: `${productSelect}`.toLowerCase().includes('sol')
+            ? `${(newPrice * 1).toFixed(3)}`
+            : `${productSelect}`.toLowerCase().includes('eth')
+            ? `${(newPrice * 1).toFixed(1)}`
+            : `${(newPrice * 1).toFixed(0)}`,
           quantity: qtyGlobal,
           productIndex: productIndex,
           isIOC: true,
