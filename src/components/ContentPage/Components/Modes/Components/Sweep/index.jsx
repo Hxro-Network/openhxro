@@ -31,6 +31,7 @@ function Sweep() {
 
   const [toler, setToler] = useState('0.1');
   const [price, SetPrice] = useState('-');
+  const [isClear, setIsClear] = useState(false);
 
   const handleReturnProduct = (product) => {
     if (`${product}`.toLowerCase().includes('eth')) {
@@ -51,6 +52,11 @@ function Sweep() {
   }, [productSelect]);
 
   const handleClickItem = (value) => {
+    if (isClear) {
+      setQtyGlobal(value);
+      setIsClear(false);
+      return;
+    }
     const newValue =
       Math.round(qtyGlobal * PADDING) + Math.round(value * PADDING);
     setQtyGlobal(`${newValue / PADDING}`);
@@ -63,7 +69,11 @@ function Sweep() {
       if (traderFunction && traderFunction.trader && markPrice !== '-') {
         let newPrice = (price * toler) / 100 + price;
         const newOrderSend = {
-          price: `${(newPrice * 1).toFixed(0)}`,
+          price: `${productSelect}`.toLowerCase().includes('sol')
+            ? `${(newPrice * 1).toFixed(3)}`
+            : `${productSelect}`.toLowerCase().includes('eth')
+            ? `${(newPrice * 1).toFixed(1)}`
+            : `${(newPrice * 1).toFixed(0)}`,
           quantity: qtyGlobal,
           productIndex: productIndex,
           isIOC: true,
@@ -97,7 +107,11 @@ function Sweep() {
       if (traderFunction && traderFunction.trader && markPrice !== '-') {
         let newPrice = price - (price * toler) / 100;
         const newOrderSend = {
-          price: `${(newPrice * 1).toFixed(0)}`,
+          price: `${productSelect}`.toLowerCase().includes('sol')
+            ? `${(newPrice * 1).toFixed(3)}`
+            : `${productSelect}`.toLowerCase().includes('eth')
+            ? `${(newPrice * 1).toFixed(1)}`
+            : `${(newPrice * 1).toFixed(0)}`,
           quantity: qtyGlobal,
           productIndex: productIndex,
           isIOC: true,
@@ -166,6 +180,7 @@ function Sweep() {
       <ButtonClear
         onClick={() => {
           setQtyGlobal(valueBet?.[0]);
+          setIsClear(true);
         }}
       >
         Clear
