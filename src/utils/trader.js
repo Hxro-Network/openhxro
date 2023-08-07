@@ -315,7 +315,11 @@ class TraderFunction {
   async connectNoneWallet(callback) {
     const provider = localStorage.getItem('provider');
     this.provider =
-      provider === 'phantom' ? window.phantom.solana : window.backpack;
+      provider === 'phantom'
+        ? window.phantom.solana
+        : provider === 'solflare'
+        ? window.solflare
+        : window.backpack;
     this.dexterityWallet = this.provider;
     const manifest = await this.getManifest();
     await this.updateMPGs();
@@ -328,7 +332,11 @@ class TraderFunction {
     try {
       if (wallet === 'phantom') {
         this.provider = window.phantom.solana;
-      } else {
+      }
+      if (wallet === 'solflare') {
+        this.provider = window.solflare;
+      }
+      if (wallet === 'backpack') {
         this.provider = window.backpack;
       }
 
@@ -336,10 +344,12 @@ class TraderFunction {
 
       this.provider?.on('connect', async (pk) => {
         this.walletPubkey =
-          wallet === 'phantom' ? `${pk}` : `${pk?.data?.publicKey}`;
+          wallet === 'phantom' || wallet === 'solflare'
+            ? `${pk}`
+            : `${pk?.data?.publicKey}`;
         const network = localStorage.getItem('network');
         this.walletPubkeyHref =
-          wallet === 'phantom'
+          wallet === 'phantom' || wallet === 'solflare'
             ? `${pk}`
             : `${pk?.data?.publicKey}` +
               `${
@@ -445,7 +455,6 @@ class TraderFunction {
         callback?.();
         return;
       }
-      console.log('this.trader', this.trader);
       await this.trader.deposit(this.dexterity.Fractional.FromString(value));
       await this.trader.updateRisk();
       callback?.();

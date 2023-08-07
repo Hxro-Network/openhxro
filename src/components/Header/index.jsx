@@ -20,7 +20,7 @@ import IconCopy from '../IconCopy';
 
 const Header = () => {
   const LIST_NETWORK = ['Mainnet', 'Devnet'];
-  const LIST_WALLET = ['phantom', 'backpack'];
+  const LIST_WALLET = ['phantom', 'solflare', 'backpack'];
 
   const {
     isConnect,
@@ -44,7 +44,11 @@ const Header = () => {
 
   useEffect(() => {
     const provider = localStorage.getItem('provider');
-    if (provider === 'phantom' || provider === 'solflare') {
+    if (
+      provider === 'phantom' ||
+      provider === 'solflare' ||
+      provider === 'backpack'
+    ) {
       refTimeOut.current = setTimeout(() => {
         setLoading(true);
       }, 2000);

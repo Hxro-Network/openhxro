@@ -84,7 +84,9 @@ export const WalletProvider = ({ children }) => {
 
     const provider = localStorage.getItem('provider');
     if (
-      (provider === 'phantom' || provider === 'backpack') &&
+      (provider === 'phantom' ||
+        provider === 'solflare' ||
+        provider === 'backpack') &&
       !dataPnL.length &&
       (netWorkConnect === process.env.MAINNET_NETWORK ||
         netWorkConnect === process.env.DEVNET_NETWORK) &&
@@ -210,6 +212,7 @@ export const WalletProvider = ({ children }) => {
     if (
       typeof traderFunction === 'undefined' ||
       provider === 'phantom' ||
+      provider === 'solflare' ||
       provider === 'backpack'
     ) {
       return;
