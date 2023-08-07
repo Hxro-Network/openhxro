@@ -84,7 +84,7 @@ export const WalletProvider = ({ children }) => {
 
     const provider = localStorage.getItem('provider');
     if (
-      (provider === 'phantom' || provider === 'solflare') &&
+      (provider === 'phantom' || provider === 'backpack') &&
       !dataPnL.length &&
       (netWorkConnect === process.env.MAINNET_NETWORK ||
         netWorkConnect === process.env.DEVNET_NETWORK) &&
@@ -210,7 +210,7 @@ export const WalletProvider = ({ children }) => {
     if (
       typeof traderFunction === 'undefined' ||
       provider === 'phantom' ||
-      provider === 'solflare'
+      provider === 'backpack'
     ) {
       return;
     }
@@ -288,7 +288,11 @@ export const WalletProvider = ({ children }) => {
         if (data?.dataWallet?.listAccounts?.length) {
           window.clearInterval(refInterValGetLadderNoneWallet.current);
         }
-        localStorage.setItem('provider', `${wallet}`.toLowerCase());
+        const provider = localStorage.getItem('provider');
+        localStorage.setItem(
+          'provider',
+          `${data?.wallet || ''}`.toLowerCase() || provider
+        );
         setIsContent(true);
         if (data?.error) {
           setDataPnL(data?.dataWallet || {});

@@ -313,7 +313,9 @@ class TraderFunction {
   }
 
   async connectNoneWallet(callback) {
-    this.provider = window.phantom.solana;
+    const provider = localStorage.getItem('provider');
+    this.provider =
+      provider === 'phantom' ? window.phantom.solana : window.backpack;
     this.dexterityWallet = this.provider;
     const manifest = await this.getManifest();
     await this.updateMPGs();
@@ -327,23 +329,26 @@ class TraderFunction {
       if (wallet === 'phantom') {
         this.provider = window.phantom.solana;
       } else {
-        this.provider = window.solflare;
+        this.provider = window.backpack;
       }
 
       this.dexterityWallet = this.provider;
 
       this.provider?.on('connect', async (pk) => {
-        this.walletPubkey = `${pk}`;
+        this.walletPubkey =
+          wallet === 'phantom' ? `${pk}` : `${pk?.data?.publicKey}`;
         const network = localStorage.getItem('network');
         this.walletPubkeyHref =
-          pk +
-          `${
-            network === 'Devnet'
-              ? '?cluster=devnet-solana'
-              : network === 'Local'
-              ? '?cluster=http%253A%252F%252Flocalhost%253A8899%252F'
-              : ''
-          }`;
+          wallet === 'phantom'
+            ? `${pk}`
+            : `${pk?.data?.publicKey}` +
+              `${
+                network === 'Devnet'
+                  ? '?cluster=devnet-solana'
+                  : network === 'Local'
+                  ? '?cluster=http%253A%252F%252Flocalhost%253A8899%252F'
+                  : ''
+              }`;
         await this.updateMPGs();
         await this.updateTrgSelect(callback);
         this.isConnected = true;
@@ -354,7 +359,7 @@ class TraderFunction {
           this.activeMpg
         );
 
-        callback({ dataWallet, products, wallet });
+        callback({ dataWallet, products, wallet: wallet });
         const buttonCreateAccount = document.getElementById(
           'button-creating-account'
         );
@@ -440,6 +445,7 @@ class TraderFunction {
         callback?.();
         return;
       }
+      console.log('this.trader', this.trader);
       await this.trader.deposit(this.dexterity.Fractional.FromString(value));
       await this.trader.updateRisk();
       callback?.();

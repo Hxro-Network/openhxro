@@ -20,7 +20,7 @@ import IconCopy from '../IconCopy';
 
 const Header = () => {
   const LIST_NETWORK = ['Mainnet', 'Devnet'];
-  const LIST_WALLET = ['Phantom', 'Solflare'];
+  const LIST_WALLET = ['phantom', 'backpack'];
 
   const {
     isConnect,
@@ -200,7 +200,9 @@ const Header = () => {
                 {LIST_WALLET.map((item) => {
                   return (
                     <option value={item} key={item} className="option-content">
-                      {item}
+                      {`${item}`.replace(/(^\w)/, (match) =>
+                        match.toUpperCase()
+                      )}
                     </option>
                   );
                 })}
