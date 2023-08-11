@@ -40,24 +40,27 @@ class TraderFunction {
         : this.dexterity.Fractional.Zero();
 
       const excess = this.trader
-        ? this.trader.getExcessMargin()
+        ? this.trader.getExcessInitialMarginWithoutOpenOrders()
         : this.dexterity.Fractional.Zero();
       const excessPercent = excess
         ?.mul(this.dexterity.Fractional.New(100, 0))
         .div(portfolio);
 
-      const requiredPercent = excessPercent
-        ? this.dexterity.Fractional.New(100, 0).sub(excessPercent)
-        : { textContent: '' };
+      // const requiredPercent = excessPercent
+      //   ? this.dexterity.Fractional.New(100, 0).sub(excessPercent)
+      //   : { textContent: '' };
 
-      const required = portfolio ? portfolio?.sub(excess) : '';
-      const requiredMargin = required
-        ? (requiredPercent.textContent =
-            required.toString(2) + ' (' + requiredPercent?.toString(2) + '%)')
+      // const required = portfolio ? portfolio?.sub(excess) : '';
+      const requiredMargin = this.trader
+        ? `${this.trader.getRequiredMaintenanceMarginWithoutOpenOrders()}`
         : '';
+      // : required
+      // ? (requiredPercent.textContent =
+      //     required.toString(2) + ' (' + requiredPercent?.toString(2) + '%)')
+      // : '';
 
       const excessMargin = excessPercent
-        ? excess?.toString(2) + ' (' + excessPercent?.toString(2) + '%)'
+        ? `${excess?.toString(2)} (${excessPercent?.toString(2)}%)`
         : '';
 
       const pnlValue =
@@ -68,7 +71,9 @@ class TraderFunction {
       const pnl = pnlValue?.toString(2);
 
       const withdrawable =
-        this.trader?.getExcessMarginUntilUnhealthy()?.toString(2, true) || 0;
+        this.trader
+          ?.getExcessMaintenanceMarginWithoutOpenOrders()
+          ?.toString(2, true) || 0;
 
       const newData = {
         listAccounts: this.listAccounts,
@@ -130,65 +135,75 @@ class TraderFunction {
   }
 
   returnDataConnect = async (callback) => {
-    if (this.isConnected) {
-      const dataWallet = await this.returnData();
+    try {
+      if (this.isConnected) {
+        const dataWallet = await this.returnData();
 
-      const dataOrders = this.listAccounts?.length
-        ? await this.returnDataOrder()
-        : [];
+        const dataOrders = this.listAccounts?.length
+          ? await this.returnDataOrder()
+          : [];
 
-      const dataPosition = this.listAccounts?.length
-        ? await this.returnDataPosition()
-        : [];
+        const dataPosition = this.listAccounts?.length
+          ? await this.returnDataPosition()
+          : [];
 
-      const dataTrader = await this.trader;
+        const dataTrader = await this.trader;
 
-      const products = this.dexterity.Manifest.GetProductsOfMPG(this.activeMpg);
+        const products = this.dexterity.Manifest.GetProductsOfMPG(
+          this.activeMpg
+        );
 
-      callback({
-        USDBalance: this.USDBalance,
-        dataWallet,
-        dataOrders,
-        dataPosition,
-        dataTrader,
-        products,
-      });
+        callback({
+          USDBalance: this.USDBalance,
+          dataWallet,
+          dataOrders,
+          dataPosition,
+          dataTrader,
+          products,
+        });
+      }
+    } catch (error) {
+      console.log('returnDataConnect', error);
     }
   };
 
   setActiveProduct(productIndex = null, productName = null) {
-    if (this.activeMpg == null) {
-      return;
-    }
-    if (productIndex !== null) {
-      this.activeProductIndex = productIndex;
-    } else if (productName !== null) {
-      let i = -1;
-      for (const p of this.activeMpg.marketProducts.array) {
-        i++;
-        if (
-          this.dexterity.productStatus(
-            p,
-            this.activeMpg.marketProducts.array
-          ) === 'uninitialized'
-        ) {
-          continue;
-        }
-        if (
-          this.dexterity
-            .bytesToString(this.dexterity.productToMeta(p).name)
-            .trim() === productName
-        ) {
-          this.activeProductIndex = i;
-          break;
+    try {
+      if (this.activeMpg == null) {
+        return;
+      }
+      if (productIndex !== null) {
+        this.activeProductIndex = productIndex;
+      } else if (productName !== null) {
+        let i = -1;
+        for (const p of this.activeMpg.marketProducts.array) {
+          i++;
+          if (
+            this.dexterity.productStatus(
+              p,
+              this.activeMpg.marketProducts.array
+            ) === 'uninitialized'
+          ) {
+            continue;
+          }
+          if (
+            this.dexterity
+              .bytesToString(this.dexterity.productToMeta(p).name)
+              .trim() === productName
+          ) {
+            this.activeProductIndex = i;
+            break;
+          }
         }
       }
-    }
-    this.activeProduct =
-      this.activeMpg.marketProducts.array[this.activeProductIndex];
-    const meta = this.dexterity.productToMeta(this.activeProduct);
+      this.activeProduct =
+        this.activeMpg.marketProducts.array[this.activeProductIndex];
+      const meta = this.dexterity.productToMeta(this.activeProduct);
 
-    this.activeProductName = this.dexterity.bytesToString(meta.name).trim();
+      this.activeProductName = this.dexterity.bytesToString(meta.name).trim();
+    } catch (error) {
+      console.log('setActiveProduct', error);
+    }
   }
 
   async getManifest(useCache = true) {

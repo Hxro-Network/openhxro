@@ -9,8 +9,12 @@ import {
 import ContentLeverage from './ContentLeverage';
 
 export const handleRenderValue = (value) => {
-  if (!value) return '-';
-  return `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+  if (!value || value === 'undefined') return '-';
+  const newValue = `${value}`.split('.');
+  const newInteger = `${newValue[0]}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+  newValue[0] = newInteger;
+
+  return newValue.join('.');
 };
 const ContentHeader = ({ dataWallet }) => {
   const TITLE_LIST = [
