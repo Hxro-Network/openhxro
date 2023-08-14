@@ -39,28 +39,35 @@ class TraderFunction {
         ? this.trader.getPositionValue()
         : this.dexterity.Fractional.Zero();
 
-      const excess = this.trader
-        ? this.trader.getExcessInitialMarginWithoutOpenOrders()
-        : this.dexterity.Fractional.Zero();
-      const excessPercent = excess
-        ?.mul(this.dexterity.Fractional.New(100, 0))
-        .div(portfolio);
+      // const excess = this.trader
+      //   ? this.trader.getExcessInitialMarginWithoutOpenOrders()
+      //   : this.dexterity.Fractional.Zero();
+      // const excessPercent = excess
+      //   ?.mul(this.dexterity.Fractional.New(100, 0))
+      //   .div(portfolio);
 
-      // const requiredPercent = excessPercent
-      //   ? this.dexterity.Fractional.New(100, 0).sub(excessPercent)
-      //   : { textContent: '' };
-
-      // const required = portfolio ? portfolio?.sub(excess) : '';
       const requiredMargin = this.trader
         ? `${this.trader.getRequiredMaintenanceMarginWithoutOpenOrders()}`
         : '';
-      // : required
-      // ? (requiredPercent.textContent =
-      //     required.toString(2) + ' (' + requiredPercent?.toString(2) + '%)')
-      // : '';
 
-      const excessMargin = excessPercent
-        ? `${excess?.toString(2)} (${excessPercent?.toString(2)}%)`
+      const excessMargin = this.trader
+        ? `${this.trader.getExcessMaintenanceMarginWithoutOpenOrders()}`
+        : '';
+
+      const rInitialMargin = this.trader
+        ? `${this.trader.getRequiredInitialMarginWithoutOpenOrders()}`
+        : '';
+
+      const eInitialMargin = this.trader
+        ? `${this.trader.getExcessInitialMarginWithoutOpenOrders()}`
+        : '';
+
+      const rInitialMarginOO = this.trader
+        ? `${this.trader.getRequiredInitialMargin()}`
+        : '';
+
+      const eInitialMarginOO = this.trader
+        ? `${this.trader.getExcessInitialMargin()}`
         : '';
 
       const pnlValue =
@@ -83,6 +90,10 @@ class TraderFunction {
         positionVal: positionVal?.toString(2),
         requiredMargin: requiredMargin,
         excessMargin: excessMargin,
+        rInitialMargin,
+        eInitialMargin,
+        rInitialMarginOO,
+        eInitialMarginOO,
         pnl,
         withdrawable,
         dataOption: this.dataOption,
