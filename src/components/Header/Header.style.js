@@ -120,7 +120,7 @@ export const Title = styled.p`
   font-size: 12px;
   line-height: 14px;
   width: 100%;
-  max-width: calc(100% / 5);
+  max-width: calc(100% / 9);
   padding: 0 4px;
 `;
 
@@ -145,7 +145,8 @@ export const WrapperSelect = styled.div`
   width: fit-content;
   white-space: nowrap;
   margin-right: 4px;
-  min-width: 144px;
+  min-width: ${(props) =>
+    props.isshow === 'true' || !props.isshow ? '144px' : '0px'};
   background: transparent;
   pointer-events: ${(props) => (props.disabled ? 'none' : 'auto')};
 

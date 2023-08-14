@@ -142,7 +142,7 @@ const Header = () => {
       {headerContent}
       <WrapperGroupButton>
         <GroupButton>
-          <WrapperSelect>
+          <WrapperSelect isshow={`${isConnect}`}>
             <select
               value={accountSelect}
               className={`select-content ${

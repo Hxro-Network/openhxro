@@ -14,12 +14,16 @@ export const handleRenderValue = (value) => {
   const newInteger = `${newValue[0]}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',');
   newValue[0] = newInteger;
 
-  return newValue.join('.');
+  return (newValue.join('.') * 1).toFixed(3);
 };
 const ContentHeader = ({ dataWallet }) => {
   const TITLE_LIST = [
     'Required Margin',
     'Excess Margin',
+    'Required Initial Margin',
+    'Excess Initial Margin',
+    'Required Initial Margin',
+    'Excess Initial Margin',
     'Collateral + Unrealized PnL',
     'Leverage (Effective)',
     'Total PnL',
@@ -40,9 +44,27 @@ const ContentHeader = ({ dataWallet }) => {
         <Value color={handleRenderColor(dataWallet?.requiredMargin)}>
           {handleRenderValue(dataWallet?.requiredMargin)}
         </Value>
+
         <Value color={handleRenderColor(dataWallet?.excessMargin)}>
           {handleRenderValue(dataWallet?.excessMargin)}
         </Value>
+
+        <Value color={handleRenderColor(dataWallet?.rInitialMargin)}>
+          {handleRenderValue(dataWallet?.rInitialMargin)}
+        </Value>
+
+        <Value color={handleRenderColor(dataWallet?.eInitialMargin)}>
+          {handleRenderValue(dataWallet?.eInitialMargin)}
+        </Value>
+
+        <Value color={handleRenderColor(dataWallet?.rInitialMarginOO)}>
+          {handleRenderValue(dataWallet?.rInitialMarginOO)}
+        </Value>
+
+        <Value color={handleRenderColor(dataWallet?.eInitialMarginOO)}>
+          {handleRenderValue(dataWallet?.eInitialMarginOO)}
+        </Value>
+
         {/* <Value color={handleRenderColor(dataWallet?.positionVal)}>
           {handleRenderValue(dataWallet?.positionVal)}
         </Value> */}
