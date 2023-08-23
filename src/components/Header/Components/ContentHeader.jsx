@@ -14,16 +14,18 @@ export const handleRenderValue = (value) => {
   const newInteger = `${newValue[0]}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',');
   newValue[0] = newInteger;
 
-  return (newValue.join('.') * 1).toFixed(3);
+  return `${(newValue.join('.') * 1).toFixed(3)}` === 'NaN'
+    ? '-'
+    : (newValue.join('.') * 1).toFixed(3);
 };
 const ContentHeader = ({ dataWallet }) => {
   const TITLE_LIST = [
-    'Required Margin',
-    'Excess Margin',
-    'Required Initial Margin',
-    'Excess Initial Margin',
-    'Required Initial Margin',
-    'Excess Initial Margin',
+    'Required Margin (Position)',
+    'Excess Margin (Position)',
+    'Required Initial Margin (Position Only)',
+    'Excess Initial Margin (Position Only)',
+    'Required Initial Margin (Incl. Open Orders)',
+    'Excess Initial Margin (Incl. Open Orders)',
     'Collateral + Unrealized PnL',
     'Leverage (Effective)',
     'Total PnL',

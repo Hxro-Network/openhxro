@@ -1403,10 +1403,10 @@
   resolved "https://registry.yarnpkg.com/@humanwhocodes/object-schema/-/object-schema-1.2.1.tgz#b520529ec21d8e5945a1851dfd1c32e94e39ff45"
   integrity sha512-ZnQMnLV4e7hDlUvw8H+U8ASL02SS2Gn6+9Ac3wGGLIe7+je2AeAOxPY+izIPJDfFDb7eDjev0Us8MO1iFRN8hA==
 
-"@hxronetwork/dexterity-ts@^1.5.43":
-  version "1.5.43"
-  resolved "https://registry.yarnpkg.com/@hxronetwork/dexterity-ts/-/dexterity-ts-1.5.43.tgz#676398c440b5eacaeb64cb4d96af3256de96d6f7"
-  integrity sha512-fciphxvICBq0DPtyJQKLkEV+0+x994inv05rEIU/L2YKwz8CW8q1TUK5MPuEuisVHcmwI9iqJw+XzY0avo2yfQ==
+"@hxronetwork/dexterity-ts@^1.5.46":
+  version "1.5.46"
+  resolved "https://registry.yarnpkg.com/@hxronetwork/dexterity-ts/-/dexterity-ts-1.5.46.tgz#a2e8905621bc4abb4b7a2bd744f1a58d8d6a25c5"
+  integrity sha512-wU8e462a8wzj5pWjWzVoLX6JB1KveQ6kUaoWrWbkieeeTbgma6umAhdBdCtPKz1nxBwe8YcSmxAavtxtgKHlEQ==
   dependencies:
     "@bonfida/aaob" "0.0.3"
     "@project-serum/anchor" "^0.24.2"
