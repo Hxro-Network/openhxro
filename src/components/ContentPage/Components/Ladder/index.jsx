@@ -1,4 +1,4 @@
-import { memo, useEffect, useMemo, useRef, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import { toast } from 'react-toastify';
 import { toastUICancelOrder, toastUISenOrder } from '@utils/notify';
 import { traderFunction } from '@contexts/walletContext';
@@ -103,7 +103,9 @@ const Ladder = () => {
   const [isSelectGroup, setIsSelectGroup] = useState(false);
   const [isMouseEnter, setIsMouseEnter] = useState(false);
   const [hadNewData, setHadNewData] = useState(false);
-  const firstLoad = useRef(0);
+  const [collapseDone, setCollapseDone] = useState(false);
+
+  // const firstLoad = useRef(0);
   const refPrevProduct = useRef('BTCUSD-PERP');
   const pointEvent = useRef(true);
   const refIndexMaxBid = useRef(0);
@@ -125,7 +127,8 @@ const Ladder = () => {
    */
   const handleSelectProduct = (product) => {
     onSelectPrice('');
-    firstLoad.current = 0;
+    // firstLoad.current = 0;
+    setCollapseDone(false);
     setIsCollapse(true);
     setIsMouseEnter(false);
     setHadNewData(false);
@@ -240,7 +243,7 @@ const Ladder = () => {
         refFocus.current &&
         refContentLadder.current
       ) {
-        firstLoad.current = 2;
+        // firstLoad.current = 2;
         refFocus.current = false;
         const wrapperLadderContent = refWrapperLadderContent.current;
         const ladderContent = refContentLadder.current;
@@ -398,9 +401,11 @@ const Ladder = () => {
           }
           return item;
         });
+        setCollapseDone(true);
         setNewTicks(ticksNew);
         return;
       }
+      setCollapseDone(true);
       setNewTicks(ticks);
       return;
     }
@@ -494,15 +499,10 @@ const Ladder = () => {
   }, [productSelect]);
 
   useEffect(() => {
-    if (firstLoad.current === 0 && newTicks.length) {
-      firstLoad.current = 1;
+    if (collapseDone || isConnect) {
+      handleFocus();
     }
-    if (firstLoad.current === 1) {
-      setTimeout(() => {
-        handleFocus();
-      }, 2500);
-    }
-  }, [JSON.stringify(newTicks)]);
+  }, [collapseDone, isConnect]);
 
   return (
     <WrapperLadders>
@@ -734,4 +734,4 @@ const Ladder = () => {
   );
 };
 
-export default memo(Ladder);
+export default Ladder;

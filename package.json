@@ -26,10 +26,11 @@
     ]
   },
   "dependencies": {
+    "@babel/plugin-proposal-object-rest-spread": "^7.20.7",
     "@emotion/react": "^11.10.6",
     "@emotion/styled": "^11.10.6",
     "@fontsource/roboto": "^4.5.8",
-    "@hxronetwork/dexterity-ts": "^1.5.29",
+    "@hxronetwork/dexterity-ts": "^1.5.46",
     "@mui/material": "^5.11.12",
     "@mui/styled-engine-sc": "^5.11.11",
     "@solana/web3.js": "^1.73.3",
