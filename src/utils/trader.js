@@ -339,7 +339,7 @@ class TraderFunction {
   }
 
   async connectNoneWallet(callback) {
-    this.provider = window.phantom.solana;
+    this.provider = window.phantom?.solana;
     this.dexterityWallet = this.provider;
     const manifest = await this.getManifest();
     await this.updateMPGs();
