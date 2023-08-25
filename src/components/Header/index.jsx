@@ -14,9 +14,11 @@ import {
   WrapperGroupButton,
   WrapperRerRefresh,
   WrapperSelect,
+  ButtonOrderConnect,
 } from './Header.style';
 import { shortPkStr } from '../../utils';
 import IconCopy from '../IconCopy';
+import ModalRPC from './Components/ModalRPC';
 
 const Header = () => {
   const LIST_NETWORK = ['Mainnet', 'Devnet'];
@@ -39,7 +41,7 @@ const Header = () => {
   const [dataWallet, setDataWallet] = useState({});
   const [openModal, setOpenModal] = useState(false);
   const [refresh, setRefresh] = useState(false);
-
+  const [openModalRPC, setOpenModalRPC] = useState(false);
   const refTimeOut = useRef();
 
   useEffect(() => {
@@ -132,6 +134,17 @@ const Header = () => {
     );
   }, [openModal]);
 
+  const renderModalRPC = useMemo(() => {
+    return (
+      <ModalRPC
+        open={openModalRPC}
+        onClose={() => {
+          setOpenModalRPC(false);
+        }}
+      />
+    );
+  }, [openModalRPC]);
+
   return (
     <StyledHeader>
       {isConnect && (
@@ -142,7 +155,7 @@ const Header = () => {
       {headerContent}
       <WrapperGroupButton>
         <GroupButton>
-          <WrapperSelect>
+          <WrapperSelect isshow={`${isConnect}`}>
             <select
               value={accountSelect}
               className={`select-content ${
@@ -248,6 +261,11 @@ const Header = () => {
               Deposit/Withdraw
             </Button>
           )}
+          {!isConnect && (
+            <ButtonOrderConnect onClick={() => setOpenModalRPC(true)}>
+              Custom RPC
+            </ButtonOrderConnect>
+          )}
           <Button
             className="connect-wallet"
             onClick={() => {
@@ -285,6 +303,7 @@ const Header = () => {
         </AddressWallet>
       </WrapperGroupButton>
       {renderModal}
+      {renderModalRPC}
     </StyledHeader>
   );
 };

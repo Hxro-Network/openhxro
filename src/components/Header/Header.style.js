@@ -145,7 +145,8 @@ export const WrapperSelect = styled.div`
   width: fit-content;
   white-space: nowrap;
   margin-right: 4px;
-  min-width: 144px;
+  min-width: ${(props) =>
+    props.isshow === 'true' || !props.isshow ? '144px' : '0px'};
   background: transparent;
   pointer-events: ${(props) => (props.disabled ? 'none' : 'auto')};
 
@@ -207,4 +208,8 @@ export const ButtonCreateAccount = styled.button`
     color: #000;
     border-color: #fff;
   }
+`;
+export const ButtonOrderConnect = styled(ButtonCreateAccount)`
+  margin-bottom: 0px;
+  min-width: 106px;
 `;
