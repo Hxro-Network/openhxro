@@ -43,6 +43,7 @@ const Header = () => {
   const [refresh, setRefresh] = useState(false);
   const [openModalRPC, setOpenModalRPC] = useState(false);
   const refTimeOut = useRef();
+  const rpc_custom = localStorage.getItem('rpc_custom') || '';
 
   useEffect(() => {
     const provider = localStorage.getItem('provider');
@@ -262,8 +263,17 @@ const Header = () => {
             </Button>
           )}
           {!isConnect && (
-            <ButtonOrderConnect onClick={() => setOpenModalRPC(true)}>
-              Custom RPC
+            <ButtonOrderConnect
+              onClick={() => {
+                if (rpc_custom) {
+                  localStorage.removeItem('rpc_custom');
+                  window.location.reload();
+                  return;
+                }
+                setOpenModalRPC(true);
+              }}
+            >
+              {rpc_custom ? 'Reset RPC' : 'Custom RPC'}
             </ButtonOrderConnect>
           )}
           <Button

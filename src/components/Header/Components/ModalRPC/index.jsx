@@ -33,14 +33,11 @@ function ModalRPC({ open, onClose }) {
     try {
       var regex = /^(https?|http):\/\/[^\s/$.?#].[^\s]*$/;
 
-      if (valueInput && !regex.test(valueInput)) {
+      if (!valueInput || !regex.test(valueInput)) {
         return;
       }
-      if (!valueInput) {
-        localStorage.removeItem('rpc_custom');
-      } else {
-        localStorage.setItem('rpc_custom', valueInput);
-      }
+
+      localStorage.setItem('rpc_custom', valueInput);
 
       onClose();
       window.location.reload();
@@ -77,6 +74,9 @@ function ModalRPC({ open, onClose }) {
             )}
           </WrapperTab>
           <WrapperButtonConfirm>
+            <Button className={'button-cancel'} onClick={onClose}>
+              Cancel
+            </Button>
             <Button className={'button-confirm'} onClick={handleConfirm}>
               Confirm
             </Button>

@@ -84,11 +84,12 @@ export const ValueRow = styled.p`
 export const WrapperButtonConfirm = styled.div`
   width: 100%;
   display: flex;
-  justify-content: center;
+  justify-content: space-around;
   margin: 20px 0px;
 
-  .button-confirm {
-    width: 150px;
+  .button-confirm,
+  .button-cancel {
+    width: 45%;
     height: 34px;
     border: 1px solid #ffffff;
     border-radius: 6px;
@@ -99,7 +100,14 @@ export const WrapperButtonConfirm = styled.div`
     outline: none;
     :hover {
       background: #141313;
-      border: 1px solid #ffffff;
+      border-color: #d8d8d8;
+    }
+  }
+  .button-cancel {
+    background-color: #fff;
+    color: #262c2e;
+    :hover {
+      background-color: #d8d8d8;
     }
   }
 `;
