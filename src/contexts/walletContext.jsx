@@ -74,10 +74,10 @@ export const WalletProvider = ({ children }) => {
   useEffect(() => {
     let rpc = '';
     if (netWorkConnect === 'Mainnet') {
-      rpc = process.env.MAINNET_NETWORK_URL;
+      rpc = localStorage.getItem('rpc') || process.env.MAINNET_NETWORK_URL;
     }
     if (netWorkConnect === 'Devnet') {
-      rpc = process.env.DEVNET_NETWORK_URL;
+      rpc = localStorage.getItem('rpc') || process.env.DEVNET_NETWORK_URL;
     }
     localStorage.setItem('rpc', rpc);
     localStorage.setItem('network', netWorkConnect);
@@ -87,9 +87,10 @@ export const WalletProvider = ({ children }) => {
       (provider === 'phantom' || provider === 'solflare') &&
       !dataPnL.length &&
       (netWorkConnect === process.env.MAINNET_NETWORK ||
-        netWorkConnect === process.env.DEVNET_NETWORK) &&
-      (rpc == process.env.MAINNET_NETWORK_URL ||
-        rpc === process.env.DEVNET_NETWORK_URL)
+        netWorkConnect === process.env.DEVNET_NETWORK)
+      //   &&
+      // (rpc == process.env.MAINNET_NETWORK_URL ||
+      //   rpc === process.env.DEVNET_NETWORK_URL)
     ) {
       window.clearTimeout(refTimeOutGetLadderNoneWallet.current);
       if (refTimeOut.current) {

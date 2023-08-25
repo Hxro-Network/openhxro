@@ -209,3 +209,8 @@ export const ButtonCreateAccount = styled.button`
     border-color: #fff;
   }
 `;
+
+export const ButtonOrderConnect = styled(ButtonCreateAccount)`
+  margin-right: 4px;
+  margin-left: auto;
+`;

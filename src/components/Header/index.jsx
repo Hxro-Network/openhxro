@@ -8,6 +8,7 @@ import { traderFunction } from '@contexts/walletContext';
 import {
   AddressWallet,
   ButtonCreateAccount,
+  ButtonOrderConnect,
   GroupButton,
   StyledHeader,
   WrapperButtonCreateAccount,
@@ -17,6 +18,7 @@ import {
 } from './Header.style';
 import { shortPkStr } from '../../utils';
 import IconCopy from '../IconCopy';
+import ModalRPC from './Components/ModalRPC';
 
 const Header = () => {
   const LIST_NETWORK = ['Mainnet', 'Devnet'];
@@ -38,6 +40,8 @@ const Header = () => {
   } = useWallet();
   const [dataWallet, setDataWallet] = useState({});
   const [openModal, setOpenModal] = useState(false);
+  const [openModalRPC, setOpenModalRPC] = useState(false);
+
   const [refresh, setRefresh] = useState(false);
 
   const refTimeOut = useRef();
@@ -132,6 +136,18 @@ const Header = () => {
     );
   }, [openModal]);
 
+  const renderModalRPC = useMemo(() => {
+    return (
+      <ModalRPC
+        open={openModalRPC}
+        onClose={() => {
+          setOpenModalRPC(false);
+        }}
+        walletConnect={walletConnect}
+      />
+    );
+  }, [openModalRPC, walletConnect]);
+
   return (
     <StyledHeader>
       {isConnect && (
@@ -216,6 +232,7 @@ const Header = () => {
                 className="select-content"
                 onChange={(e) => {
                   setNetWorkConnect(e?.target.value);
+                  localStorage.removeItem('rpc');
                 }}
               >
                 <option
@@ -262,7 +279,6 @@ const Header = () => {
             {loading && <IconLoading />}
           </Button>
         </GroupButton>
-
         <AddressWallet hidden={!!dataPnL?.walletPubkey}>
           <WrapperButtonCreateAccount className="wrapper-button-creating-account">
             <ButtonCreateAccount id="button-creating-account">
@@ -283,8 +299,15 @@ const Header = () => {
             )}
           </div>
         </AddressWallet>
+
+        {!isConnect && (
+          <ButtonOrderConnect onClick={() => setOpenModalRPC(true)}>
+            Connect Order
+          </ButtonOrderConnect>
+        )}
       </WrapperGroupButton>
       {renderModal}
+      {renderModalRPC}
     </StyledHeader>
   );
 };
