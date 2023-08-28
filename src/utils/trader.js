@@ -48,26 +48,36 @@ class TraderFunction {
       const requiredMargin = this.trader
         ? `${this.trader.getRequiredMaintenanceMarginWithoutOpenOrders()}`
         : '';
-
+      // console.log('Required Margin (Position)', requiredMargin);
       const excessMargin = this.trader
         ? `${this.trader.getExcessMaintenanceMarginWithoutOpenOrders()}`
         : '';
+      // console.log('Excess Margin (Position)', excessMargin);
 
       const rInitialMargin = this.trader
         ? `${this.trader.getRequiredInitialMarginWithoutOpenOrders()}`
         : '';
-
+      // console.log('Required Initial Margin (Position Only)', rInitialMargin);
       const eInitialMargin = this.trader
         ? `${this.trader.getExcessInitialMarginWithoutOpenOrders()}`
         : '';
+      // console.log('Excess Initial Margin (Position Only)', eInitialMargin);
 
       const rInitialMarginOO = this.trader
         ? `${this.trader.getRequiredInitialMargin()}`
         : '';
+      // console.log(
+      //   'Required Initial Margin (Incl. Open Orders)',
+      //   rInitialMarginOO
+      // );
 
       const eInitialMarginOO = this.trader
         ? `${this.trader.getExcessInitialMargin()}`
         : '';
+      // console.log(
+      //   'Excess Initial Margin (Incl. Open Orders)',
+      //   eInitialMarginOO
+      // );
 
       const pnlValue =
         this.trader && portfolio

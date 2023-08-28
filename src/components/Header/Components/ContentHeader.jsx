@@ -10,13 +10,12 @@ import ContentLeverage from './ContentLeverage';
 
 export const handleRenderValue = (value) => {
   if (!value || value === 'undefined') return '-';
+
   const newValue = `${value}`.split('.');
   const newInteger = `${newValue[0]}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',');
   newValue[0] = newInteger;
-
-  return `${(newValue.join('.') * 1).toFixed(3)}` === 'NaN'
-    ? '-'
-    : (newValue.join('.') * 1).toFixed(3);
+  const valueFormat = `${newValue[0]}.${`${newValue[1] || 0}00`.slice(0, 3)}`;
+  return valueFormat;
 };
 const ContentHeader = ({ dataWallet }) => {
   const TITLE_LIST = [

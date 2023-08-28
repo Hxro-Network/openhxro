@@ -56,4 +56,5 @@ export const WrapperTab = styled.div`
 
 export const InputRPC = styled(InputContent)`
   text-align: center;
+  margin-right: 26px;
 `;
