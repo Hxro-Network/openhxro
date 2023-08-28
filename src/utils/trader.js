@@ -1,7 +1,13 @@
 import BN from 'bn.js';
 import dexterity from '@hxronetwork/dexterity-ts';
 import { Connection, PublicKey } from '@solana/web3.js';
-
+import {
+  RPC,
+  RPC_CUSTOM,
+  MAINNET_NETWORK_URL,
+  TESTNET_NETWORK_URL,
+  DEVNET_NETWORK_URL,
+} from './constants';
 class TraderFunction {
   constructor() {
     this.rpc = null;
@@ -39,25 +45,28 @@ class TraderFunction {
         ? this.trader.getPositionValue()
         : this.dexterity.Fractional.Zero();
 
-      const excess = this.trader
-        ? this.trader.getExcessMargin()
-        : this.dexterity.Fractional.Zero();
-      const excessPercent = excess
-        ?.mul(this.dexterity.Fractional.New(100, 0))
-        .div(portfolio);
-
-      const requiredPercent = excessPercent
-        ? this.dexterity.Fractional.New(100, 0).sub(excessPercent)
-        : { textContent: '' };
-
-      const required = portfolio ? portfolio?.sub(excess) : '';
-      const requiredMargin = required
-        ? (requiredPercent.textContent =
-            required.toString(2) + ' (' + requiredPercent?.toString(2) + '%)')
+      const requiredMargin = this.trader
+        ? `${this.trader.getRequiredMaintenanceMarginWithoutOpenOrders()}`
         : '';
 
-      const excessMargin = excessPercent
-        ? excess?.toString(2) + ' (' + excessPercent?.toString(2) + '%)'
+      const excessMargin = this.trader
+        ? `${this.trader.getExcessMaintenanceMarginWithoutOpenOrders()}`
+        : '';
+
+      const rInitialMargin = this.trader
+        ? `${this.trader.getRequiredInitialMarginWithoutOpenOrders()}`
+        : '';
+
+      const eInitialMargin = this.trader
+        ? `${this.trader.getExcessInitialMarginWithoutOpenOrders()}`
+        : '';
+
+      const rInitialMarginOO = this.trader
+        ? `${this.trader.getRequiredInitialMargin()}`
+        : '';
+
+      const eInitialMarginOO = this.trader
+        ? `${this.trader.getExcessInitialMargin()}`
         : '';
 
       const pnlValue =
@@ -68,7 +77,9 @@ class TraderFunction {
       const pnl = pnlValue?.toString(2);
 
       const withdrawable =
-        this.trader?.getExcessMarginUntilUnhealthy()?.toString(2, true) || 0;
+        this.trader
+          ?.getExcessMaintenanceMarginWithoutOpenOrders()
+          ?.toString(2, true) || 0;
 
       const newData = {
         listAccounts: this.listAccounts,
@@ -78,6 +89,10 @@ class TraderFunction {
         positionVal: positionVal?.toString(2),
         requiredMargin: requiredMargin,
         excessMargin: excessMargin,
+        rInitialMargin,
+        eInitialMargin,
+        rInitialMarginOO,
+        eInitialMarginOO,
         pnl,
         withdrawable,
         dataOption: this.dataOption,
@@ -197,7 +212,9 @@ class TraderFunction {
         return;
       }
       const connectionUrl =
-        localStorage.getItem('rpc') || process.env.MAINNET_NETWORK;
+        localStorage.getItem('rpc_custom') ||
+        localStorage.getItem('rpc') ||
+        process.env.MAINNET_NETWORK;
       this.rpc = connectionUrl;
       const manifest = await this.dexterity.getManifest(
         connectionUrl,
@@ -218,13 +235,14 @@ class TraderFunction {
     }
 
     for (const [_, { pubkey, mpg, orderbooks }] of manifest.fields.mpgs) {
-      const rpc = localStorage.getItem('rpc');
+      const rpc =
+        localStorage.getItem('rpc_custom') || localStorage.getItem('rpc');
       if (
-        (rpc === process.env.MAINNET_NETWORK_URL &&
+        (rpc === MAINNET_NETWORK_URL &&
           pubkey.toBase58() !== process.env.MAINNET_MPG_KEY) ||
-        (rpc === process.env.TESTNET_NETWORK_URL &&
+        (rpc === TESTNET_NETWORK_URL &&
           pubkey.toBase58() !== process.env.TESTNET_MPG_KEY) ||
-        (rpc === process.env.DEVNET_NETWORK_URL &&
+        (rpc === DEVNET_NETWORK_URL &&
           pubkey.toBase58() !== process.env.DEVNET_MPG_KEY)
       ) {
         continue;
@@ -274,9 +292,7 @@ class TraderFunction {
     const TOKEN_PROGRAM_ID = new PublicKey(process.env.TOKEN_PROGRAM_ID);
     const USDC_TOKEN_MINT = new PublicKey(process.env.USDC_TOKEN_MINT);
     async function getBalance(walletPubkey) {
-      const connection = new Connection(
-        localStorage.getItem('rpc') || process.env.MAINNET_NETWORK_URL
-      );
+      const connection = new Connection(RPC);
       const walletPublicKey = new PublicKey(walletPubkey);
       const tokenAccount = await connection.getParsedTokenAccountsByOwner(
         walletPublicKey,
