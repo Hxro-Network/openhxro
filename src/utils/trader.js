@@ -1,7 +1,13 @@
 import BN from 'bn.js';
 import dexterity from '@hxronetwork/dexterity-ts';
 import { Connection, PublicKey } from '@solana/web3.js';
-
+import {
+  RPC,
+  RPC_CUSTOM,
+  MAINNET_NETWORK_URL,
+  TESTNET_NETWORK_URL,
+  DEVNET_NETWORK_URL,
+} from './constants';
 class TraderFunction {
   constructor() {
     this.rpc = null;
@@ -232,11 +238,11 @@ class TraderFunction {
       const rpc =
         localStorage.getItem('rpc_custom') || localStorage.getItem('rpc');
       if (
-        (rpc === process.env.MAINNET_NETWORK_URL &&
+        (rpc === MAINNET_NETWORK_URL &&
           pubkey.toBase58() !== process.env.MAINNET_MPG_KEY) ||
-        (rpc === process.env.TESTNET_NETWORK_URL &&
+        (rpc === TESTNET_NETWORK_URL &&
           pubkey.toBase58() !== process.env.TESTNET_MPG_KEY) ||
-        (rpc === process.env.DEVNET_NETWORK_URL &&
+        (rpc === DEVNET_NETWORK_URL &&
           pubkey.toBase58() !== process.env.DEVNET_MPG_KEY)
       ) {
         continue;
@@ -286,11 +292,7 @@ class TraderFunction {
     const TOKEN_PROGRAM_ID = new PublicKey(process.env.TOKEN_PROGRAM_ID);
     const USDC_TOKEN_MINT = new PublicKey(process.env.USDC_TOKEN_MINT);
     async function getBalance(walletPubkey) {
-      const connection = new Connection(
-        localStorage.getItem('rpc_custom') ||
-          localStorage.getItem('rpc') ||
-          process.env.MAINNET_NETWORK_URL
-      );
+      const connection = new Connection(RPC);
       const walletPublicKey = new PublicKey(walletPubkey);
       const tokenAccount = await connection.getParsedTokenAccountsByOwner(
         walletPublicKey,

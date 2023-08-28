@@ -1,3 +1,9 @@
+import {
+  DEVNET_NETWORK_URL,
+  MAINNET_NETWORK_URL,
+  TESTNET_NETWORK_URL,
+} from './constants';
+
 /**
  * Trim value of map item
  * @param {*} item
@@ -22,11 +28,11 @@ class Market {
         continue;
       }
       if (
-        (manifest.fields.rpc === process.env.MAINNET_NETWORK_URL &&
+        (manifest.fields.rpc === MAINNET_NETWORK_URL &&
           pk !== process.env.MAINNET_MPG_KEY) ||
-        (manifest.fields.rpc === process.env.TESTNET_NETWORK_URL &&
+        (manifest.fields.rpc === TESTNET_NETWORK_URL &&
           pk !== process.env.TESTNET_MPG_KEY) ||
-        (manifest.fields.rpc === process.env.DEVNET_NETWORK_URL &&
+        (manifest.fields.rpc === DEVNET_NETWORK_URL &&
           pk !== process.env.DEVNET_MPG_KEY)
       ) {
         continue;

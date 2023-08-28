@@ -3,6 +3,11 @@ import TraderFunction from '@utils/trader';
 import * as markets from '@utils/markets';
 import { Ladder } from '@utils/ladder';
 import { Feed } from '@utils/feeds';
+import {
+  DEVNET_NETWORK_URL,
+  MAINNET_NETWORK_URL,
+  TESTNET_NETWORK_URL,
+} from '../utils/constants';
 
 export const WalletContext = createContext({
   dataPnL: '',
@@ -74,10 +79,13 @@ export const WalletProvider = ({ children }) => {
   useEffect(() => {
     let rpc = '';
     if (netWorkConnect === 'Mainnet') {
-      rpc = process.env.MAINNET_NETWORK_URL;
+      rpc = MAINNET_NETWORK_URL;
     }
     if (netWorkConnect === 'Devnet') {
-      rpc = process.env.DEVNET_NETWORK_URL;
+      rpc = DEVNET_NETWORK_URL;
+    }
+    if (netWorkConnect === 'Testnet') {
+      rpc = TESTNET_NETWORK_URL;
     }
     localStorage.setItem('rpc', rpc);
     localStorage.setItem('network', netWorkConnect);
@@ -88,8 +96,7 @@ export const WalletProvider = ({ children }) => {
       !dataPnL.length &&
       (netWorkConnect === process.env.MAINNET_NETWORK ||
         netWorkConnect === process.env.DEVNET_NETWORK) &&
-      (rpc == process.env.MAINNET_NETWORK_URL ||
-        rpc === process.env.DEVNET_NETWORK_URL)
+      (rpc == MAINNET_NETWORK_URL || rpc === DEVNET_NETWORK_URL)
     ) {
       window.clearTimeout(refTimeOutGetLadderNoneWallet.current);
       if (refTimeOut.current) {
