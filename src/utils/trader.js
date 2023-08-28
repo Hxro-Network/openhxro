@@ -145,65 +145,75 @@ class TraderFunction {
   }
 
   returnDataConnect = async (callback) => {
-    if (this.isConnected) {
-      const dataWallet = await this.returnData();
+    try {
+      if (this.isConnected) {
+        const dataWallet = await this.returnData();
 
-      const dataOrders = this.listAccounts?.length
-        ? await this.returnDataOrder()
-        : [];
+        const dataOrders = this.listAccounts?.length
+          ? await this.returnDataOrder()
+          : [];
 
-      const dataPosition = this.listAccounts?.length
-        ? await this.returnDataPosition()
-        : [];
+        const dataPosition = this.listAccounts?.length
+          ? await this.returnDataPosition()
+          : [];
 
-      const dataTrader = await this.trader;
+        const dataTrader = await this.trader;
 
-      const products = this.dexterity.Manifest.GetProductsOfMPG(this.activeMpg);
+        const products = this.dexterity.Manifest.GetProductsOfMPG(
+          this.activeMpg
+        );
 
-      callback({
-        USDBalance: this.USDBalance,
-        dataWallet,
-        dataOrders,
-        dataPosition,
-        dataTrader,
-        products,
-      });
+        callback({
+          USDBalance: this.USDBalance,
+          dataWallet,
+          dataOrders,
+          dataPosition,
+          dataTrader,
+          products,
+        });
+      }
+    } catch (error) {
+      console.log('returnDataConnect', error);
     }
   };
 
   setActiveProduct(productIndex = null, productName = null) {
-    if (this.activeMpg == null) {
-      return;
-    }
-    if (productIndex !== null) {
-      this.activeProductIndex = productIndex;
-    } else if (productName !== null) {
-      let i = -1;
-      for (const p of this.activeMpg.marketProducts.array) {
-        i++;
-        if (
-          this.dexterity.productStatus(
-            p,
-            this.activeMpg.marketProducts.array
-          ) === 'uninitialized'
-        ) {
-          continue;
-        }
-        if (
-          this.dexterity
-            .bytesToString(this.dexterity.productToMeta(p).name)
-            .trim() === productName
-        ) {
-          this.activeProductIndex = i;
-          break;
+    try {
+      if (this.activeMpg == null) {
+        return;
+      }
+      if (productIndex !== null) {
+        this.activeProductIndex = productIndex;
+      } else if (productName !== null) {
+        let i = -1;
+        for (const p of this.activeMpg.marketProducts.array) {
+          i++;
+          if (
+            this.dexterity.productStatus(
+              p,
+              this.activeMpg.marketProducts.array
+            ) === 'uninitialized'
+          ) {
+            continue;
+          }
+          if (
+            this.dexterity
+              .bytesToString(this.dexterity.productToMeta(p).name)
+              .trim() === productName
+          ) {
+            this.activeProductIndex = i;
+            break;
+          }
         }
       }
-    }
-    this.activeProduct =
-      this.activeMpg.marketProducts.array[this.activeProductIndex];
-    const meta = this.dexterity.productToMeta(this.activeProduct);
+      this.activeProduct =
+        this.activeMpg.marketProducts.array[this.activeProductIndex];
+      const meta = this.dexterity.productToMeta(this.activeProduct);
 
-    this.activeProductName = this.dexterity.bytesToString(meta.name).trim();
+      this.activeProductName = this.dexterity.bytesToString(meta.name).trim();
+    } catch (error) {
+      console.log('setActiveProduct', error);
+    }
   }
 
   async getManifest(useCache = true) {
@@ -329,7 +339,7 @@ class TraderFunction {
   }
 
   async connectNoneWallet(callback) {
-    this.provider = window.phantom.solana;
+    this.provider = window.phantom?.solana;
     this.dexterityWallet = this.provider;
     const manifest = await this.getManifest();
     await this.updateMPGs();

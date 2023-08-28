@@ -3,7 +3,7 @@ import styled from 'styled-components';
 export const StyledHeader = styled.header`
   background: transparent;
   width: 100%;
-  min-height: 93px;
+  /* min-height: 93px; */
   display: flex;
   position: sticky;
   top: 0px;
@@ -120,7 +120,7 @@ export const Title = styled.p`
   font-size: 12px;
   line-height: 14px;
   width: 100%;
-  max-width: calc(100% / 5);
+  max-width: calc(100% / 9);
   padding: 0 4px;
 `;
 

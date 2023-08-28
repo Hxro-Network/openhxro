@@ -357,13 +357,13 @@ export const WalletProvider = ({ children }) => {
    */
   const changeProduct = (product) => {
     refChangeProduct.current = true;
+    setProductSelect(product);
+    setDataLadder([]);
     setTimeout(() => {
-      setProductSelect(product);
-      setDataLadder([]);
       if (traderFunction && traderFunction.trader) {
         traderFunction.setActiveProduct(null, `${product}`.trim());
       }
-    }, 500);
+    }, 300);
   };
 
   const onSelectPrice = (price) => {

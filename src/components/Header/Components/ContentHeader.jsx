@@ -20,8 +20,12 @@ export const handleRenderValue = (value) => {
 };
 const ContentHeader = ({ dataWallet }) => {
   const TITLE_LIST = [
-    'Required Margin',
-    'Excess Margin',
+    'Required Margin (Position)',
+    'Excess Margin (Position)',
+    'Required Initial Margin (Position Only)',
+    'Excess Initial Margin (Position Only)',
+    'Required Initial Margin (Incl. Open Orders)',
+    'Excess Initial Margin (Incl. Open Orders)',
     'Collateral + Unrealized PnL',
     'Leverage (Effective)',
     'Total PnL',
@@ -44,6 +48,21 @@ const ContentHeader = ({ dataWallet }) => {
         </Value>
         <Value color={handleRenderColor(dataWallet?.excessMargin)}>
           {handleRenderValue(dataWallet?.excessMargin)}
+        </Value>
+        <Value color={handleRenderColor(dataWallet?.rInitialMargin)}>
+          {handleRenderValue(dataWallet?.rInitialMargin)}
+        </Value>
+
+        <Value color={handleRenderColor(dataWallet?.eInitialMargin)}>
+          {handleRenderValue(dataWallet?.eInitialMargin)}
+        </Value>
+
+        <Value color={handleRenderColor(dataWallet?.rInitialMarginOO)}>
+          {handleRenderValue(dataWallet?.rInitialMarginOO)}
+        </Value>
+
+        <Value color={handleRenderColor(dataWallet?.eInitialMarginOO)}>
+          {handleRenderValue(dataWallet?.eInitialMarginOO)}
         </Value>
         {/* <Value color={handleRenderColor(dataWallet?.positionVal)}>
           {handleRenderValue(dataWallet?.positionVal)}
