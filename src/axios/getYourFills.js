@@ -9,13 +9,17 @@ let cancelToken = undefined;
  * @returns your fills information
  */
 export const getYourFills = (productSelect, walletAddress) => {
-  if (typeof cancelToken !== typeof undefined) {
-    cancelToken.cancel('cancelToken');
+  try {
+    if (typeof cancelToken !== typeof undefined) {
+      cancelToken.cancel('cancelToken');
+    }
+    cancelToken = axios.CancelToken.source();
+    return request({
+      method: 'GET',
+      url: `${process.env.API_URL}/fills?product=${productSelect}&trg=${walletAddress}`,
+      cancelToken: cancelToken.token,
+    });
+  } catch (error) {
+    console.log('');
   }
-  cancelToken = axios.CancelToken.source();
-  return request({
-    method: 'GET',
-    url: `${process.env.API_URL}/fills?product=${productSelect}&trg=${walletAddress}`,
-    cancelToken: cancelToken.token,
-  });
 };

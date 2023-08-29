@@ -1,7 +1,7 @@
-import axios from 'axios'
-import request from './request'
+import axios from 'axios';
+import request from './request';
 
-let cancelToken = undefined
+let cancelToken = undefined;
 
 /**
  * Get Market
@@ -9,13 +9,17 @@ let cancelToken = undefined
  * @returns market information
  */
 export const getMarKet = (productSelect) => {
-  if (typeof cancelToken !== typeof undefined) {
-    cancelToken.cancel('cancelToken')
+  try {
+    if (typeof cancelToken !== typeof undefined) {
+      cancelToken.cancel('cancelToken');
+    }
+    cancelToken = axios.CancelToken.source();
+    return request({
+      method: 'GET',
+      url: `${process.env.API_URL}/fills?product=${productSelect}`,
+      cancelToken: cancelToken.token,
+    });
+  } catch (error) {
+    console.log('');
   }
-  cancelToken = axios.CancelToken.source()
-  return request({
-    method: 'GET',
-    url: `${process.env.API_URL}/fills?product=${productSelect}`,
-    cancelToken: cancelToken.token,
-  })
-}
+};
