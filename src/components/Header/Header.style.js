@@ -33,7 +33,6 @@ export const WrapperContent = styled.div`
   display: flex;
   flex-direction: column;
   width: 100%;
-  max-width: 1000px;
   margin-right: 32px;
 `;
 
@@ -117,7 +116,7 @@ export const Title = styled.p`
   text-align: center;
   font-style: normal;
   font-weight: 700;
-  font-size: 12px;
+  font-size: 11px;
   line-height: 14px;
   width: 100%;
   max-width: calc(100% / 9);
