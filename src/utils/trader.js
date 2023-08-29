@@ -349,7 +349,13 @@ class TraderFunction {
   }
 
   async connectNoneWallet(callback) {
-    this.provider = window.phantom?.solana;
+    const provider = localStorage.getItem('provider');
+    this.provider =
+      provider === 'backpack'
+        ? window.backpack
+        : provider === 'solflare'
+        ? window.solflare
+        : window.phantom.solana;
     this.dexterityWallet = this.provider;
     const manifest = await this.getManifest();
     await this.updateMPGs();
@@ -362,24 +368,31 @@ class TraderFunction {
     try {
       if (wallet === 'phantom') {
         this.provider = window.phantom.solana;
-      } else {
+      }
+      if (wallet === 'solflare') {
         this.provider = window.solflare;
       }
-
+      if (wallet === 'backpack') {
+        this.provider = window.backpack;
+      }
       this.dexterityWallet = this.provider;
-
       this.provider?.on('connect', async (pk) => {
-        this.walletPubkey = `${pk}`;
+        this.walletPubkey =
+          wallet === 'phantom' || wallet === 'solflare'
+            ? `${pk}`
+            : `${pk?.data?.publicKey}`;
         const network = localStorage.getItem('network');
         this.walletPubkeyHref =
-          pk +
-          `${
-            network === 'Devnet'
-              ? '?cluster=devnet-solana'
-              : network === 'Local'
-              ? '?cluster=http%253A%252F%252Flocalhost%253A8899%252F'
-              : ''
-          }`;
+          wallet === 'phantom' || wallet === 'solflare'
+            ? `${pk}`
+            : `${pk?.data?.publicKey}` +
+              `${
+                network === 'Devnet'
+                  ? '?cluster=devnet-solana'
+                  : network === 'Local'
+                  ? '?cluster=http%253A%252F%252Flocalhost%253A8899%252F'
+                  : ''
+              }`;
         await this.updateMPGs();
         await this.updateTrgSelect(callback);
         this.isConnected = true;
