@@ -22,7 +22,7 @@ import ModalRPC from './Components/ModalRPC';
 
 const Header = () => {
   const LIST_NETWORK = ['Mainnet', 'Devnet'];
-  const LIST_WALLET = ['Phantom', 'Solflare'];
+  const LIST_WALLET = ['phantom', 'solflare', 'backpack'];
 
   const {
     isConnect,
@@ -47,7 +47,11 @@ const Header = () => {
 
   useEffect(() => {
     const provider = localStorage.getItem('provider');
-    if (provider === 'phantom' || provider === 'solflare') {
+    if (
+      provider === 'phantom' ||
+      provider === 'solflare' ||
+      provider === 'backpack'
+    ) {
       refTimeOut.current = setTimeout(() => {
         setLoading(true);
       }, 2000);
@@ -221,7 +225,9 @@ const Header = () => {
                 {LIST_WALLET.map((item) => {
                   return (
                     <option value={item} key={item} className="option-content">
-                      {item}
+                      {`${item}`.replace(/(^\w)/, (match) =>
+                        match.toUpperCase()
+                      )}
                     </option>
                   );
                 })}
