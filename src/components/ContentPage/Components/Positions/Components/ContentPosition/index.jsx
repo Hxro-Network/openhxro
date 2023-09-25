@@ -68,9 +68,10 @@ function ContentPosition({
 
   const newProductListKey = useMemo(() => {
     return productsListKey.filter((item) => {
-      if (`${item}`.includes('USD')) {
-        return `${item}`.trim();
-      }
+      // if (`${item}`.includes('USD')) {
+      //   return `${item}`.trim();
+      // }
+      return `${item}`.trim();
     });
   }, [JSON.stringify(productsListKey)]);
 
@@ -124,7 +125,7 @@ function ContentPosition({
       return `${(markPrice * 1).toFixed(3)}`.replace(regex, ',');
     }
 
-    return '-';
+    return `${(markPrice * 1).toFixed(3)}`.replace(regex, ',');
   };
 
   const handleReturnAnnualizedBasis = (instrument) => {
@@ -161,7 +162,7 @@ function ContentPosition({
     if (`${product}`.includes('SOL')) {
       return `${((fundingRateList[product] * 1) / 1000000).toFixed(5)}%`;
     }
-    return '-';
+    return `${((fundingRateList[product] * 1) / 1000000).toFixed(5)}%`;
   };
 
   return (
