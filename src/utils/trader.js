@@ -3,7 +3,7 @@ import dexterity from '@hxronetwork/dexterity-ts';
 import { Connection, PublicKey } from '@solana/web3.js';
 import {
   RPC,
-  RPC_CUSTOM,
+  // RPC_CUSTOM,
   MAINNET_NETWORK_URL,
   TESTNET_NETWORK_URL,
   DEVNET_NETWORK_URL,
